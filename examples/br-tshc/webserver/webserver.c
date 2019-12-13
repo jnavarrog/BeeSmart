@@ -40,7 +40,7 @@
 #include <string.h>
 
 /*---------------------------------------------------------------------------*/
-static const char *TOP = "<html>\n  <head>\n    <title>Contiki-NG</title>\n  </head>\n<body>\n";
+static const char *TOP = "<html>\n<head>\n<title>LISTA DE NODOS</title>\n</head>\n<body>\n";
 static const char *BOTTOM = "\n</body>\n</html>\n";
 static char buf[256];
 static int blen;
@@ -89,23 +89,25 @@ PT_THREAD(generate_routes(struct httpd_state *s))
   PSOCK_BEGIN(&s->sout);
   SEND_STRING(&s->sout, TOP);
 
-  ADD("  Neighbors\n  <ul>\n");
+  ADD("Neighbors\n");
+  SEND(&s->sout);
+  ADD("<ul>\n");
   SEND(&s->sout);
   for(nbr = uip_ds6_nbr_head();
       nbr != NULL;
       nbr = uip_ds6_nbr_next(nbr)) {
-    ADD("    <li>");
+    ADD("ipv6=[");
     ipaddr_add(&nbr->ipaddr);
-    ADD("</li>\n");
+    ADD("]\n");
     SEND(&s->sout);
   }
-  ADD("  </ul>\n");
+  ADD("</ul>\n");
   SEND(&s->sout);
 
 #if (UIP_MAX_ROUTES != 0)
   {
     static uip_ds6_route_t *r;
-    ADD("  Routes\n  <ul>\n");
+    ADD("Routes\n<ul>\n");
     SEND(&s->sout);
     for(r = uip_ds6_route_head(); r != NULL; r = uip_ds6_route_next(r)) {
       ADD("    <li>");
@@ -124,7 +126,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
 #if (UIP_SR_LINK_NUM != 0)
   if(uip_sr_num_nodes() > 0) {
     static uip_sr_node_t *link;
-    ADD("  Routing links\n  <ul>\n");
+    ADD("Routing links\n<ul>\n");
     SEND(&s->sout);
     for(link = uip_sr_node_head(); link != NULL; link = uip_sr_node_next(link)) {
       if(link->parent != NULL) {
@@ -134,18 +136,16 @@ PT_THREAD(generate_routes(struct httpd_state *s))
         NETSTACK_ROUTING.get_sr_node_ipaddr(&child_ipaddr, link);
         NETSTACK_ROUTING.get_sr_node_ipaddr(&parent_ipaddr, link->parent);
 
-        ADD("    <li>");
+        ADD("Node: ");
         ipaddr_add(&child_ipaddr);
 
-        ADD(" (parent: ");
+        ADD(" Parent: ");
         ipaddr_add(&parent_ipaddr);
-        ADD(") %us", (unsigned int)link->lifetime);
-
-        ADD("</li>\n");
+        ADD(" LifeTime %us\n", (unsigned int)link->lifetime);
         SEND(&s->sout);
       }
     }
-    ADD("  </ul>");
+    ADD("</ul>");
     SEND(&s->sout);
   }
 #endif /* UIP_SR_LINK_NUM != 0 */

@@ -108,7 +108,7 @@ res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buf
 
 	/*int len = */ coap_get_payload(request, &payload);
 
-	//Datos recibidos en el post
+	//Datos recibidos en el post (estan en la variable payload)
 	printf("DATA: %s\n", payload);
 
 	printf("[LOG: User] POST successful\n");
@@ -125,7 +125,7 @@ res_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
 
 	/*int len = */ coap_get_payload(request, &payload);
 
-	//Datos recibidos en el post
+	//Datos recibidos en el put (estan en la variable payload)
 	printf("DATA: %s\n", payload);
 
 	printf("[LOG: User] PUT successful\n");
