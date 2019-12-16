@@ -89,14 +89,14 @@ PT_THREAD(generate_routes(struct httpd_state *s))
   PSOCK_BEGIN(&s->sout);
   SEND_STRING(&s->sout, TOP);
 
-  ADD("Neighbors\n");
+  ADD("Nodes history\n");
   SEND(&s->sout);
   ADD("<ul>\n");
   SEND(&s->sout);
   for(nbr = uip_ds6_nbr_head();
       nbr != NULL;
       nbr = uip_ds6_nbr_next(nbr)) {
-    ADD("ipv6=[");
+    ADD("Node=[");
     ipaddr_add(&nbr->ipaddr);
     ADD("]\n");
     SEND(&s->sout);
@@ -136,12 +136,12 @@ PT_THREAD(generate_routes(struct httpd_state *s))
         NETSTACK_ROUTING.get_sr_node_ipaddr(&child_ipaddr, link);
         NETSTACK_ROUTING.get_sr_node_ipaddr(&parent_ipaddr, link->parent);
 
-        ADD("Node: ");
+        ADD("node_ipv6=[");
         ipaddr_add(&child_ipaddr);
 
-        ADD(" Parent: ");
+        ADD("]-parent_ipv6=[");
         ipaddr_add(&parent_ipaddr);
-        ADD(" LifeTime %us\n", (unsigned int)link->lifetime);
+        ADD("]-LifeTime=%us\n", (unsigned int)link->lifetime);
         SEND(&s->sout);
       }
     }

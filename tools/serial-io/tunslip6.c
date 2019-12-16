@@ -320,6 +320,7 @@ serial_to_tun(FILE *inslip, int outfd)
       if(c=='\n') {
         if(is_sensible_string(uip.inbuf, inbufptr)) {
           if (timestamp) stamptime();
+	  //Aquí se reciben los datos del puerto serial	
           fwrite(uip.inbuf, inbufptr, 1, stdout);
           inbufptr=0;
         }

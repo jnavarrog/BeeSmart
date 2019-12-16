@@ -33,6 +33,9 @@
 #include "contiki.h"
 #include "net/routing/routing.h"
 #include "rpl-border-router.h"
+#include "net/ipv6/uiplib.h"
+#include <stdio.h>
+#include <string.h>
 
 /* Log configuration */
 #include "sys/log.h"
@@ -42,18 +45,33 @@
 uint8_t prefix_set;
 
 /*---------------------------------------------------------------------------*/
+/*
+char buf[UIPLIB_IPV6_MAX_STR_LEN];
+  uiplib_ipaddr_snprint(buf, sizeof(buf), ipaddr);
+  LOG_OUTPUT("%s", buf);
+*/
+
 void
 print_local_addresses(void)
 {
   int i;
   uint8_t state;
+  char bufip[UIPLIB_IPV6_MAX_STR_LEN]; //modificado
 
   LOG_INFO("Server IPv6 addresses:\n");
   for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
     state = uip_ds6_if.addr_list[i].state;
     if(uip_ds6_if.addr_list[i].isused &&
        (state == ADDR_TENTATIVE || state == ADDR_PREFERRED)) {
-      LOG_INFO("  ");
+
+      uiplib_ipaddr_snprint(bufip, sizeof(bufip), &uip_ds6_if.addr_list[i].ipaddr); //modificado
+
+      if(strstr(bufip, "fe80") != NULL) {
+      	LOG_INFO("IPv6_BR_LL=");
+      } else {
+      	LOG_INFO("IPv6_BR_GA=");
+      }
+
       LOG_INFO_6ADDR(&uip_ds6_if.addr_list[i].ipaddr);
       LOG_INFO_("\n");
     }
