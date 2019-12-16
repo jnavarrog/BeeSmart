@@ -64,6 +64,8 @@
 #endif
 speed_t b_rate = BAUDRATE;
 
+FILE *br_ip_file;
+
 int verbose = 2;
 const char *ipaddr;
 const char *netmask;
@@ -178,6 +180,7 @@ serial_to_tun(FILE *inslip, int outfd)
   static int inbufptr = 0;
   int ret,i;
   unsigned char c;
+  char * cadena;
 
 #ifdef linux
   ret = fread(&c, 1, 1, inslip);
@@ -322,6 +325,15 @@ serial_to_tun(FILE *inslip, int outfd)
           if (timestamp) stamptime();
 	  //Aquí se reciben los datos del puerto serial	
           fwrite(uip.inbuf, inbufptr, 1, stdout);
+
+	cadena = strstr((const char *)uip.inbuf, "IPv6_BR");
+	//printf("\n---> %s   --->%lu\n",cadena, sizeof(cadena));
+	if(cadena != NULL){
+	  br_ip_file = fopen("IP_BR_DATA.conf", "a+");
+	  fwrite(cadena,inbufptr-19,1, br_ip_file);
+	  fclose(br_ip_file);
+	}//fin if
+
           inbufptr=0;
         }
       }

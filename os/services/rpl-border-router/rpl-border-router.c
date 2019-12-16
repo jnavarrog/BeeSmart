@@ -66,11 +66,11 @@ print_local_addresses(void)
 
       uiplib_ipaddr_snprint(bufip, sizeof(bufip), &uip_ds6_if.addr_list[i].ipaddr); //modificado
 
-      if(strstr(bufip, "fe80") != NULL) {
+      if(strstr(bufip, "fe80") != NULL) { // modificado
       	LOG_INFO("IPv6_BR_LL=");
       } else {
       	LOG_INFO("IPv6_BR_GA=");
-      }
+      }// fin if 
 
       LOG_INFO_6ADDR(&uip_ds6_if.addr_list[i].ipaddr);
       LOG_INFO_("\n");
