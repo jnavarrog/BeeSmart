@@ -94,6 +94,7 @@ PT_THREAD(shell_input(struct pt *pt, shell_output_func output, const char *cmd))
 
   /* Shave off any leading spaces. */
   while(*cmd == ' ') {
+printf("\n>>while %s\n",cmd);
     cmd++;
   }
 
@@ -107,6 +108,7 @@ PT_THREAD(shell_input(struct pt *pt, shell_output_func output, const char *cmd))
     }
 
     cmd_descr = shell_command_lookup(cmd);
+
     if(cmd_descr != NULL) {
       static struct pt cmd_pt;
       PT_SPAWN(pt, &cmd_pt, cmd_descr->func(&cmd_pt, output, args));
