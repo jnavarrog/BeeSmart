@@ -35,6 +35,7 @@
  * \author
  *      Matthias Kovatsch <kovatsch@inf.ethz.ch>
  */
+//sensores
 
 #ifndef PROJECT_CONF_H_
 #define PROJECT_CONF_H_
@@ -73,5 +74,27 @@
 #define TSCH_HOPPING_SEQUENCE_2_2 (uint8_t[]){ 20, 25 }
 1 channel, sequence length 1 
 #define TSCH_HOPPING_SEQUENCE_1_1 (uint8_t[]){ 20 }*/
+
+//SENSORES
+
+#define DS18B20_AMOUNT 4
+
+typedef enum Pfe_Sensor_Type {
+  PFE_SENSOR_TYPE_TEMPERATURE_TEMPERATURE,
+  PFE_SENSOR_TYPE_TEMPERATURE_ADDRESS,
+  PFE_SENSOR_TYPE_WEIGHT_WEIGHT,
+  PFE_SENSOR_TYPE_SERVO_ON,
+  PFE_SENSOR_TYPE_SERVO_OFF
+} Pfe_Sensor_Type;
+
+typedef enum Pfe_Sensor_Configuration_Type {
+  PFE_SENSOR_CONFIGURATION_TYPE_TEMPERATURE_START,
+  PFE_SENSOR_CONFIGURATION_TYPE_TEMPERATURE_INDEX,
+  PFE_SENSOR_CONFIGURATION_TYPE_SERVO_ON,
+  PFE_SENSOR_CONFIGURATION_TYPE_SERVO_OFF
+} Pfe_Sensor_Configuration_Type;
+
+
+//extern const struct sensors_sensor pfe_sensors;
 
 #endif /* PROJECT_CONF_H_ */

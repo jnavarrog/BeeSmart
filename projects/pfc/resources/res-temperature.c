@@ -41,9 +41,6 @@
 #include <stdio.h>
 #include "coap-engine.h"
 
-#include <DS18B20.h>
-#include <Math.h>
-
 //Defino los handler para cada metodo
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -71,10 +68,16 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
   //----------------------------------------------------------------------------------------------/
   char message[62];
 
-  sprintf(message, "Node: %x%x:%x%x:%x%x:%x%x Message: respondo el get",
+  for(int i=0; i < DS18B20_AMOUNT; i++){
+  	pfe_sensors.configure(PFE_SENSOR_CONFIGURATION_TYPE_TEMPERATURE_INDEX, i);
+  	int temperatura = pfe_sensors.value(PFE_SENSOR_TYPE_TEMPERATURE_TEMPERATURE);
+  //int temperatura = pfe_sensors.value(PFE_SENSOR_TYPE_TEMPERATURE_ADDRESS);  
 
-		  linkaddr_node_addr.u8[0],linkaddr_node_addr.u8[1],linkaddr_node_addr.u8[2],linkaddr_node_addr.u8[3],
-		  linkaddr_node_addr.u8[4],linkaddr_node_addr.u8[5],linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7]);
+  	sprintf(message, "%d", temperatura);
+	if (i < DS18B20_AMOUNT - 1) {
+		sprintf(message, ",");
+	}
+  }//fin for
 
   //----------------------------------------------------------------------------------------------/
 

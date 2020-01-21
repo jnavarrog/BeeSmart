@@ -12,6 +12,8 @@ do
 	SALIDA=`coap-client -v 1 -B 5 -m get coap://$IP_NODO$RECURSO`
 	TSTAMP=`date "+%d-%m-%Y %T"`
 
-	echo "["$TSTAMP"]"$IP_NODO=$SALIDA
+	PUB=`"["$TSTAMP"]"$IP_NODO=$SALIDA`
+
+	mosquito_pub -h 192.168.1.9 -t "test" -m $PUB
 
 done < NODOS.dat
