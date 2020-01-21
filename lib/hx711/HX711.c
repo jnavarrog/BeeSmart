@@ -1,5 +1,4 @@
 #include <HX711.h>
-#include <stdio.h>
 
 #define HX711_SCK_1_TIME_OFF 60
 #define HX711_SCK_0_TIME_DATA 1
@@ -65,7 +64,7 @@ Hx711_Object hx711_init(Hx711_Port port, Hx711_Pin pin_dout, Hx711_Pin pin_sck) 
   hx711_object.pin_dout = pin_dout;
   hx711_object.pin_sck = pin_sck;
   hx711_object.weight = 0;
-  hx711_object.reading_type = NONE;
+  hx711_object.reading_type = HX711_READING_TYPE_NONE;
   hx711_object.handler = &hx711_handler;
 
   return hx711_object;
@@ -89,17 +88,17 @@ void hx711_start(Hx711_Object * hx711_object) {
 }
 
 void hx711_read_once(Hx711_Object * hx711_object) {
-  hx711_object->reading_type = ONCE;
+  hx711_object->reading_type = HX711_READING_TYPE_ONCE;
   hx711_start(hx711_object);
 }
 
 void hx711_read_continuos(Hx711_Object * hx711_object) {
-  hx711_object->reading_type = CONTINUOS;
+  hx711_object->reading_type = HX711_READING_TYPE_CONTINUOS;
   hx711_start(hx711_object);
 }
 
 void hx711_stop(Hx711_Object * hx711_object) {
-  hx711_object->reading_type = NONE;
+  hx711_object->reading_type = HX711_READING_TYPE_NONE;
   hx711_unset_interrupts(hx711_object->pin_dout);
 }
 
@@ -134,7 +133,7 @@ PROCESS_THREAD(hx711_reader, ev, data) {
 
   PROCESS_BEGIN();
 
-  while(hx711_object->reading_type != NONE) {
+  while(hx711_object->reading_type != HX711_READING_TYPE_NONE) {
     PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
 
     weights[i] = hx711_read_weight_sample(hx711_object);
@@ -153,8 +152,8 @@ PROCESS_THREAD(hx711_reader, ev, data) {
 
       i = 0;
 
-      if (hx711_object->reading_type == ONCE) {
-        hx711_object->reading_type = NONE;
+      if (hx711_object->reading_type == HX711_READING_TYPE_ONCE) {
+        hx711_object->reading_type = HX711_READING_TYPE_NONE;
       }
     }
   }
