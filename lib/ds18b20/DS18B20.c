@@ -20,7 +20,7 @@ void ds18b20_read_temp_from_address(Ds18b20_Object * ds18b20_object);
 
 uint64_t ds18b20_search_once(uint8_t index, Ds18b20_Object * ds18b20_objects, OneWire_Object * ow_object_ptr);
 
-Ds18b20_Object* ds18b20_search_all(
+void ds18b20_search_all(
   Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount
 );
 
@@ -128,7 +128,7 @@ uint64_t ds18b20_search_once(uint8_t index, Ds18b20_Object * ds18b20_objects, On
   return discrepancies;
 }
 
-Ds18b20_Object* ds18b20_search_all(
+void ds18b20_search_all(
   Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount
 ) {
   uint8_t i = 0;
@@ -140,9 +140,7 @@ Ds18b20_Object* ds18b20_search_all(
   for(i = 0; i < max_amount; i++) {
     discrepancies = ds18b20_search_once(i, ds18b20_objects, ow_object);
     if (discrepancies == 0) {
-      return ds18b20_objects;
+      return;
     }
   }
-
-  return ds18b20_objects;
 }

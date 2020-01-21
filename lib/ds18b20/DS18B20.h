@@ -16,7 +16,7 @@ typedef struct Ds18b20_Object {
   OneWire_Object      *ow_object_ptr;
 } Ds18b20_Object;
 
-extern Ds18b20_Object * ds18b20_search_all(
+extern void ds18b20_search_all(
   Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount
 );
 

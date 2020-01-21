@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <stdbool.h>
 #include <gpio-hal.h>
 
 typedef gpio_hal_port_t Hx711_Port;
@@ -10,9 +9,9 @@ typedef gpio_hal_event_handler_t Hx711_Handler;
 typedef uint32_t Hx711_Weight;
 
 typedef enum Hx711_Reading_Type {
-  NONE,
-  ONCE,
-  CONTINUOS
+  HX711_READING_TYPE_NONE,
+  HX711_READING_TYPE_ONCE,
+  HX711_READING_TYPE_CONTINUOS
 } Hx711_Reading_Type;
 
 typedef struct Hx711_Object {
