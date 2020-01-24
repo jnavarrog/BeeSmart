@@ -3,39 +3,42 @@
 #include <Math.h>
 #include <stdio.h>
 
-#define DS18B20_AMOUNT 9
+int ds18b20_amount_int = 4;
+int ds18b20_port_int = GPIO_HAL_NULL_PORT;
+int ds18b20_pin_int = IOID_23;
 
-Ds18b20_Port ds18b20_port = GPIO_HAL_NULL_PORT;
-Ds18b20_Pin ds18b20_pin = IOID_25;
+PROCESS(ds18b20_example, "ds18b20_example");
+AUTOSTART_PROCESSES(&ds18b20_example);
 
-Ds18b20_Object ds18b20_objects[DS18B20_AMOUNT];
-
-PROCESS(ds18b20, "ds18b20");
-AUTOSTART_PROCESSES(&ds18b20);
-
-PROCESS_THREAD(ds18b20, ev, data) {
+PROCESS_THREAD(ds18b20_example, ev, data) {
   static struct etimer periodic;
   PROCESS_BEGIN();
   printf("ow_example.c\n");
 
-  ds18b20_search_all(ds18b20_objects, ds18b20_port, ds18b20_pin, DS18B20_AMOUNT);
+  SENSORS_ACTIVATE(ds18b20);
+  ds18b20.configure(DS18B20_CONFIGURATION_AMOUNT, ds18b20_amount_int);
+  ds18b20.configure(DS18B20_CONFIGURATION_PORT, ds18b20_port_int);
+  ds18b20.configure(DS18B20_CONFIGURATION_PIN, ds18b20_pin_int);
+  ds18b20.configure(DS18B20_CONFIGURATION_SEARCH, 0);
 
   while(1) {
-    etimer_set(&periodic, 20);
+    etimer_set(&periodic, CLOCK_SECOND * 4);
 
     printf("------------- TEMPERATURES ----------\n");
-    for(int i = 0; i < DS18B20_AMOUNT; i++) {
-      ds18b20_read_temp_from_address(&(ds18b20_objects[i]));
+    for(int i = 0; i < ds18b20_amount_int; i++) {
+      ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
+      ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
 
-      printf(
-        "Address %llx: %d,%d\n",
-        ds18b20_objects[i].address,
-        ds18b20_objects[i].temperature.integer,
-        ds18b20_objects[i].temperature.decimal
-      );
+      int address = ds18b20.value(DS18B20_VALUE_ADDRESS);
+      int integer = ds18b20.value(DS18B20_VALUE_TEMPERATURE_INTEGER);
+      int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
+
+
+      printf("Address %d: %d,%d\n", address, integer, decimal);
     }
 
     PROCESS_WAIT_UNTIL(etimer_expired(&periodic));
   }
+  ds18b20.configure(DS18B20_CONFIGURATION_ERASE, 0);
   PROCESS_END();
 }

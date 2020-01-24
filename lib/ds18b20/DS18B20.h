@@ -1,23 +1,33 @@
 #include <OW.h>
+#include "lib/sensors.h"
 
-typedef OneWire_Port Ds18b20_Port;
-typedef OneWire_Pin Ds18b20_Pin;
-typedef OneWire_Address Ds18b20_Address;
+extern const struct sensors_sensor ds18b20;
 
-typedef struct Ds18b20_Temperature {
-  uint8_t           integer;
-  uint8_t           decimal;
-} Ds18b20_Temperature;
+typedef enum Ds18b20_Configuration {
+  DS18B20_CONFIGURATION_INDEX,
+  DS18B20_CONFIGURATION_AMOUNT,
+  DS18B20_CONFIGURATION_PIN,
+  DS18B20_CONFIGURATION_PORT,
+  DS18B20_CONFIGURATION_SEARCH,
+  DS18B20_CONFIGURATION_READ,
+  DS18B20_CONFIGURATION_ERASE
+} Ds18b20_Configuration;
 
-typedef struct Ds18b20_Object {
-  bool                initiated;
-  OneWire_Address     address;
-  Ds18b20_Temperature temperature;
-  OneWire_Object      *ow_object_ptr;
-} Ds18b20_Object;
+typedef enum Ds18b20_Value {
+  DS18B20_VALUE_ADDRESS,
+  DS18B20_VALUE_TEMPERATURE_INTEGER,
+  DS18B20_VALUE_TEMPERATURE_DECIMAL
+} Ds18b20_Value;
 
-extern void ds18b20_search_all(
-  Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount
-);
+typedef enum Ds18b20_Response {
+  DS18B20_RESPONSE_SUCCESS,
+  DS18B20_RESPONSE_ERROR
+} Ds18b20_Response;
 
-extern void ds18b20_read_temp_from_address(Ds18b20_Object * ds18b20_object);
+typedef enum Ds18b20_Status {
+  DS18B20_STATUS_NOT_READY,
+  DS18B20_STATUS_SEARCH_READY,
+  DS18B20_STATUS_READ_READY
+} Ds18b20_Status;
+
+
