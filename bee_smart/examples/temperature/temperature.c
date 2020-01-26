@@ -13,7 +13,7 @@ AUTOSTART_PROCESSES(&ds18b20_example);
 PROCESS_THREAD(ds18b20_example, ev, data) {
   static struct etimer periodic;
   PROCESS_BEGIN();
-  printf("ow_example.c\n");
+  printf("temperature.c\n");
 
   SENSORS_ACTIVATE(ds18b20);
   ds18b20.configure(DS18B20_CONFIGURATION_AMOUNT, ds18b20_amount_int);

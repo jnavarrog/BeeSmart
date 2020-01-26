@@ -21,8 +21,8 @@ typedef enum Ds18b20_Value {
 } Ds18b20_Value;
 
 typedef enum Ds18b20_Response {
-  DS18B20_RESPONSE_SUCCESS,
-  DS18B20_RESPONSE_ERROR
+  DS18B20_RESPONSE_ERROR,
+  DS18B20_RESPONSE_SUCCESS
 } Ds18b20_Response;
 
 typedef enum Ds18b20_Status {

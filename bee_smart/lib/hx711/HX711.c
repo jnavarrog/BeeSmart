@@ -133,8 +133,8 @@ PROCESS_THREAD(hx711_reader, ev, data) {
 
   PROCESS_BEGIN();
 
-  while(hx711_object->reading_type != HX711_READING_TYPE_NONE) {
-    PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
+  while(1) {
+    PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL && hx711_object->reading_type != HX711_READING_TYPE_NONE);
 
     weights[i] = hx711_read_weight_sample(hx711_object);
 
@@ -154,9 +154,9 @@ PROCESS_THREAD(hx711_reader, ev, data) {
 
       if (hx711_object->reading_type == HX711_READING_TYPE_ONCE) {
         hx711_object->reading_type = HX711_READING_TYPE_NONE;
+        hx711_stop(hx711_object);
       }
     }
   }
-  hx711_stop(hx711_object);
   PROCESS_END();
 }
