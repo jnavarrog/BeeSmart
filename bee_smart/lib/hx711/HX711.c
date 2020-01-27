@@ -46,10 +46,10 @@ void hx711_set_interrupt_handler(gpio_hal_event_handler_t * handler) {
   gpio_hal_register_handler(handler);
 }
 
-PROCESS(hx711_reader, "hx711_reader");
+PROCESS(hx711_thread, "hx711_thread");
 
 static void hx711_handler_function(Hx711_Pin_Mask pin_mask) {
-  process_poll(&hx711_reader);
+  process_poll(&hx711_thread);
 }
 
 static Hx711_Handler hx711_handler = {
@@ -84,7 +84,7 @@ void hx711_start(Hx711_Object * hx711_object) {
   hx711_set_interrupts(hx711_object->pin_dout);
   hx711_object->handler->pin_mask = gpio_hal_pin_to_mask(hx711_object->pin_dout);
   hx711_set_interrupt_handler(hx711_object->handler);
-  process_start(&hx711_reader, hx711_object);
+  process_start(&hx711_thread, hx711_object);
 }
 
 void hx711_read_once(Hx711_Object * hx711_object) {
@@ -122,7 +122,7 @@ Hx711_Weight hx711_read_weight_sample(Hx711_Object * hx711_object) {
   return weight;
 }
 
-PROCESS_THREAD(hx711_reader, ev, data) {
+PROCESS_THREAD(hx711_thread, ev, data) {
   static Hx711_Weight weights[HX711_AVERAGE_SAMPLES];
   static uint8_t i = 0;
   static Hx711_Object * hx711_object;

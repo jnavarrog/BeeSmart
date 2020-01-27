@@ -11,7 +11,7 @@ Hx711_Pin hx711_pin_sck = 0;
 Hx711_Object hx711_object;
 
 bool hx711_sensor_ready_to_start_read() {
-  return hx711_port >= 0 && hx711_port >= 0 && hx711_port >= 0;
+  return hx711_port >= 0 && hx711_pin_dout >= 0 && hx711_pin_sck >= 0;
 }
 
 bool hx711_sensor_ready_to_get_read() {
@@ -28,9 +28,6 @@ int hx711_sensor_start_read() {
   return HX711_RESPONSE_SUCCESS;
 }
 
-// int hx711_sensor_stop() {
-//   hx711_stop(&hx711_object)
-// }
 
 /*--------------------------SENSOR INTERFACE----------------------------------*/
 const struct sensors_sensor hx711;
