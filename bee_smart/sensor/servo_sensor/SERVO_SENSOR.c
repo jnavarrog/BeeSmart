@@ -73,6 +73,9 @@ static int value(int type) {
 
   case SERVO_VALUE_OPEN:
     return (int) servo_sensor_open();
+
+  case SERVO_VALUE_STOP:
+    return (int) servo_sensor_stop();
   }
 
   return SERVO_RESPONSE_ERROR;
