@@ -40,9 +40,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "coap-engine.h"
-#include <DS18B20_SENSOR.h>
-#include <math.h>
-#include <stdio.h>
+
 
 //Defino los handler para cada metodo
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -51,13 +49,13 @@ static void res_put_handler(coap_message_t *request, coap_message_t *response, u
 static void res_delete_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 
 //Defino el recurso
-RESOURCE(res_temperature,
-         "title=\"Temperature",
+RESOURCE(res_reboot,
+         "title=\"reboot",
          res_get_handler,
 	 res_post_handler,
 	 res_put_handler,
          res_delete_handler);
-
+         
 //GET
 static void
 res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
@@ -69,26 +67,9 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
 
   //Respuesta del GET
   //----------------------------------------------------------------------------------------------/
-  char message[62];
-  sprintf(message, "Temp: ");
-  int ds18b20_amount_int_res = DS18B20_AMOUNT_INT;
-  
-  for(int i = 0; i < ds18b20_amount_int_res; i++) {
-      ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
-      ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
+  char message[10];
 
-      int address_low = ds18b20.value(DS18B20_VALUE_ADDRESS_LOW);
-      int address_high = ds18b20.value(DS18B20_VALUE_ADDRESS_HIGH);
-      int integer = ds18b20.value(DS18B20_VALUE_TEMPERATURE_INTEGER);
-      int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
-
-      printf("Address %x%x: %d,%d\n", address_high, address_low, integer, decimal);
-     
-     sprintf(message + strlen(message), "|%d.%d",integer, decimal);		  
-            
-  }//end for
-       sprintf(message + strlen(message), "|");		  
-  printf("MESSAGE LEN: %d\n",strlen(message));
+  sprintf(message, "Reboot");
 
   //----------------------------------------------------------------------------------------------/
 
@@ -113,6 +94,9 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
   coap_set_payload(response, buffer, length);
 
   printf("[LOG: User] GET successful\n");
+
+  printf("Rebooting...\n");
+  watchdog_reboot(); //esta función reinicia el sistema
 
 }// end get
 

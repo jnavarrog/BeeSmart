@@ -58,8 +58,11 @@ int ds18b20_amount_int = DS18B20_AMOUNT_INT;
 //Definición de los recursos (su implementación va en la carpeta resources)
 extern coap_resource_t
   res_test,
-  res_chunks,
-  res_temperature;
+  res_addresstemperature,
+  res_temperature,
+  res_reboot,
+  res_weight,
+  res_servo;
 
 
 PROCESS(er_example_server, "Servidor CoAP");
@@ -76,14 +79,20 @@ PROCESS_THREAD(er_example_server, ev, data)
   ds18b20.configure(DS18B20_CONFIGURATION_PIN, ds18b20_pin_int);
   ds18b20.configure(DS18B20_CONFIGURATION_START, 0);
   
+  //servo
+  servo_position_now=0;
+  
   PROCESS_PAUSE();
 
-  LOG_INFO("Starting Erbium Example Server\n");
+  LOG_INFO("BEESMART - PROYECTO FIN DE CARRERA 2020 - NODO\n");
 
   //Activación y definición de la URI de los recursos
   coap_activate_resource(&res_test, "test");
-  coap_activate_resource(&res_chunks, "chunks");
-  coap_activate_resource(&res_temperature, "sensors/temperature");
+  coap_activate_resource(&res_addresstemperature, "sensors/temperature/all");
+  coap_activate_resource(&res_temperature, "sensors/temperature/temperature");
+  coap_activate_resource(&res_reboot, "commands/reboot");
+  coap_activate_resource(&res_weight, "sensors/weight");
+  coap_activate_resource(&res_servo, "actuators/servo");
 
   /* Define application-specific events here. */
   while(1) {

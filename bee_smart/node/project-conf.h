@@ -77,5 +77,4 @@
 1 channel, sequence length 1 
 #define TSCH_HOPPING_SEQUENCE_1_1 (uint8_t[]){ 20 }*/
 
-
 #endif /* PROJECT_CONF_H_ */

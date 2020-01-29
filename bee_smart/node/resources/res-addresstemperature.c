@@ -44,24 +44,23 @@
 #include <math.h>
 #include <stdio.h>
 
+//Defino los handler para cada metodo
+static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+static void res_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+static void res_delete_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+
+//Defino el recurso
+RESOURCE(res_addresstemperature,
+         "title=\"Address-Temperature",
+         res_get_handler,
+	 res_post_handler,
+	 res_put_handler,
+         res_delete_handler);
+         
 int i = 0;
 
-static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
-
-/*
- * For data larger than COAP_MAX_CHUNK_SIZE (e.g., when stored in flash) resources must be aware of the buffer limitation
- * and split their responses by themselves. To transfer the complete resource through a TCP stream or CoAP's blockwise transfer,
- * the byte offset where to continue is provided to the handler as int32_t pointer.
- * These chunk-wise resources must set the offset value to its new position or -1 of the end is reached.
- * (The offset for CoAP's blockwise transfer can go up to 2'147'481'600 = ~2047 M for block size 2048 (reduced to 1024 in observe-03.)
- */
-RESOURCE(res_chunks,
-         "title=\"chunks",
-         res_get_handler,
-         NULL,
-         NULL,
-         NULL);
-
+//GET
 #define CHUNKS_TOTAL    512
 
 static void
@@ -79,11 +78,7 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     return;
   }
   //----------------------------------------------------------------------------------------
-  /* Generate data until reaching CHUNKS_TOTAL. */
-  //while(strpos < preferred_size) {
-    //strpos += snprintf((char *)buffer + strpos, preferred_size - strpos + 1, "|%ld|", (long) *offset);
-  //}
- 
+
   int ds18b20_amount_int_res = DS18B20_AMOUNT_INT;
   
   ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
@@ -94,12 +89,11 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
   int integer = ds18b20.value(DS18B20_VALUE_TEMPERATURE_INTEGER);
   int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
 
-  strpos += snprintf((char *)buffer + strpos, preferred_size - strpos + 1,"Address %x%x: Temperature: %d,%d\n", address_high, address_low, integer, decimal);
+  strpos += snprintf((char *)buffer + strpos, preferred_size - strpos + 1,"|Address:%x%x-Temperature:%d,%d|", address_high, address_low, integer, decimal);
      
-   printf("Address %x%x: %d,%d iter: %d len %d\n", address_high, address_low, integer, decimal,i, strlen((char *)buffer)); 
+   printf("Address:%x%x Temperature:%d,%d iter: %d len %d\n", address_high, address_low, integer, decimal,i, strlen((char *)buffer)); 
    i++;
   
-  printf("preferred_size %d strpos %li offset %li\n", preferred_size, strpos, *offset);
   //----------------------------------------------------------------------------------------
 
   /* snprintf() does not adjust return value if truncated by size. */
@@ -120,4 +114,48 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     i=0;
     *offset = -1;
   }
-}
+}//end get
+
+//POST
+static void
+res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
+{
+
+	const uint8_t * payload;
+
+	/*int len = */ coap_get_payload(request, &payload);
+
+	//Datos recibidos en el post (estan en la variable payload)
+	printf("DATA: %s\n", payload);
+
+	printf("[LOG: User] POST successful\n");
+
+
+}//end post
+
+//PUT
+static void
+res_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
+{
+
+	const uint8_t * payload;
+
+	/*int len = */ coap_get_payload(request, &payload);
+
+	//Datos recibidos en el put (estan en la variable payload)
+	printf("DATA: %s\n", payload);
+
+	printf("[LOG: User] PUT successful\n");
+
+
+}//end put
+
+//DELETE
+static void
+res_delete_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
+{
+
+  printf("[LOG: User] DELETE successful\n");
+
+}// end delete
+
