@@ -79,9 +79,6 @@ PROCESS_THREAD(er_example_server, ev, data)
   ds18b20.configure(DS18B20_CONFIGURATION_PIN, ds18b20_pin_int);
   ds18b20.configure(DS18B20_CONFIGURATION_START, 0);
   
-  //servo
-  servo_position_now=0;
-  
   PROCESS_PAUSE();
 
   LOG_INFO("BEESMART - PROYECTO FIN DE CARRERA 2020 - NODO\n");

@@ -68,8 +68,8 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
   //----------------------------------------------------------------------------------------------/
   char message[20];
 
-  sprintf(message, "ServoPosition:%d\n", servo_position_now);
-  printf("ServoPosition:%d\n", servo_position_now);
+  sprintf(message, "SERVO");
+  printf("Servo\n");
 
   //----------------------------------------------------------------------------------------------/
 
