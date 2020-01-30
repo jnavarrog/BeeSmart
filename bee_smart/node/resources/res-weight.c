@@ -49,7 +49,7 @@ static void res_delete_handler(coap_message_t *request, coap_message_t *response
 
 //Defino el recurso
 RESOURCE(res_weight,
-         "title=\"weight",
+         "title=\"Weight\",Desc=\"Peso de la colmena\",GET=\"Devuelve el peso de la colmena\",POST|PUT=\"nf\",DEL=\"nf\"",
          res_get_handler,
 	 res_post_handler,
 	 res_put_handler,

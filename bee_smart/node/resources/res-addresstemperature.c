@@ -52,7 +52,7 @@ static void res_delete_handler(coap_message_t *request, coap_message_t *response
 
 //Defino el recurso
 RESOURCE(res_addresstemperature,
-         "title=\"Address-Temperature",
+         "title=\"AddressTemperature\",Desc=\"Temperatura y dirección de los sensores de temperatura\",GET=\"Devuelve la dirección y el valor de temperatura de cada sensor\",POST|PUT=\"nf\",DEL=\"nf\"",
          res_get_handler,
 	 res_post_handler,
 	 res_put_handler,

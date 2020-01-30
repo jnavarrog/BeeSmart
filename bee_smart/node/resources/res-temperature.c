@@ -52,7 +52,7 @@ static void res_delete_handler(coap_message_t *request, coap_message_t *response
 
 //Defino el recurso
 RESOURCE(res_temperature,
-         "title=\"Temperature",
+         "title=\"Temperature\",Desc=\"Devuelve la temperatura de todos los sensores\",GET=\"Valor de temperatura de todos los sensores (sin la dirección)\",POST|PUT=\"nf\",DEL=\"nf\"",
          res_get_handler,
 	 res_post_handler,
 	 res_put_handler,
@@ -70,7 +70,7 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
   //Respuesta del GET
   //----------------------------------------------------------------------------------------------/
   char message[62];
-  sprintf(message, "Temp: ");
+  sprintf(message, "Temp:");
   int ds18b20_amount_int_res = DS18B20_AMOUNT_INT;
   
   for(int i = 0; i < ds18b20_amount_int_res; i++) {

@@ -49,7 +49,7 @@ static void res_delete_handler(coap_message_t *request, coap_message_t *response
 
 //Defino el recurso
 RESOURCE(res_servo,
-         "title=\"servomotor",
+         "title=\"Servo\",Desc=\"Controla el servo que maneja la puerta de la colmena\",GET=\"Posición actual de la puerta\",POST|PUT=\"1 para abrir, 0 para cerrar\",DEL=\"nf\"",
          res_get_handler,
 	 res_post_handler,
 	 res_put_handler,

@@ -165,16 +165,33 @@ well_known_core_get_handler(coap_message_t *request, coap_message_t *response,
             strpos, (long)*offset, bufpos);
 
     if(strpos > 0) {
-      ADD_CHAR_IF_POSSIBLE(',');
+      ADD_CHAR_IF_POSSIBLE('}');
+      ADD_CHAR_IF_POSSIBLE('\n');
     }
-    ADD_CHAR_IF_POSSIBLE('<');
+    
+    ADD_CHAR_IF_POSSIBLE('{');
+    ADD_CHAR_IF_POSSIBLE('U');
+    ADD_CHAR_IF_POSSIBLE('R');
+    ADD_CHAR_IF_POSSIBLE('I');
+    ADD_CHAR_IF_POSSIBLE(':');
     ADD_CHAR_IF_POSSIBLE('/');
     ADD_STRING_IF_POSSIBLE(resource->url, >=);
-    ADD_CHAR_IF_POSSIBLE('>');
+
 
     if(resource->attributes != NULL && resource->attributes[0]) {
       ADD_CHAR_IF_POSSIBLE(';');
+      ADD_CHAR_IF_POSSIBLE('P');
+      ADD_CHAR_IF_POSSIBLE('A');
+      ADD_CHAR_IF_POSSIBLE('R');
+      ADD_CHAR_IF_POSSIBLE('A');
+      ADD_CHAR_IF_POSSIBLE('M');
+      ADD_CHAR_IF_POSSIBLE('S');
+      ADD_CHAR_IF_POSSIBLE(':');
       ADD_STRING_IF_POSSIBLE(resource->attributes, >);
+    }
+    
+    if(coap_get_next_resource(resource)==NULL){
+      ADD_CHAR_IF_POSSIBLE('}');
     }
 
     /* buffer full, but resource not completed yet; or: do not break if resource exactly fills buffer. */

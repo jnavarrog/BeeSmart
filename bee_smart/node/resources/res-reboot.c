@@ -50,7 +50,7 @@ static void res_delete_handler(coap_message_t *request, coap_message_t *response
 
 //Defino el recurso
 RESOURCE(res_reboot,
-         "title=\"reboot",
+         "title=\"Reboot\",Desc=\"Reinicia el nodo\",GET=\"Reinicia el nodo\",POST|PUT=\"nf\",DEL=\"nf\"",
          res_get_handler,
 	 res_post_handler,
 	 res_put_handler,

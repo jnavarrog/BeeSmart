@@ -49,7 +49,7 @@ static void res_delete_handler(coap_message_t *request, coap_message_t *response
 
 //Defino el recurso
 RESOURCE(res_test,
-         "title=\"test",
+         "title=\"Test\",Desc=\"Recurso de prueba\",GET=\"Devuelve la MAC del nodo\",POST|PUT=\"nf\",DEL=\"nf\"",
          res_get_handler,
 	 res_post_handler,
 	 res_put_handler,
@@ -68,7 +68,7 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
   //----------------------------------------------------------------------------------------------/
   char message[62];
 
-  sprintf(message, "Node: %x%x:%x%x:%x%x:%x%x Message: respondo el get",
+  sprintf(message, "Node MAC: %x%x:%x%x:%x%x:%x%x",
 
 		  linkaddr_node_addr.u8[0],linkaddr_node_addr.u8[1],linkaddr_node_addr.u8[2],linkaddr_node_addr.u8[3],
 		  linkaddr_node_addr.u8[4],linkaddr_node_addr.u8[5],linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7]);
