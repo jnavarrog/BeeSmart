@@ -174,6 +174,7 @@ is_sensible_string(const unsigned char *s, int len)
 void
 serial_to_tun(FILE *inslip, int outfd)
 {
+
   static union {
     unsigned char inbuf[2000];
   } uip;
@@ -329,7 +330,7 @@ serial_to_tun(FILE *inslip, int outfd)
 	cadena = strstr((const char *)uip.inbuf, "IPv6_BR");
 	//printf("\n---> %s   --->%lu\n",cadena, sizeof(cadena));
 	if(cadena != NULL){
-	  br_ip_file = fopen("IP_BR_DATA.conf", "a+");
+	  br_ip_file = fopen("IP_BR_DATA.dat", "a+");
 	  fwrite(cadena,inbufptr-19,1, br_ip_file);
 	  fclose(br_ip_file);
 	}//fin if
