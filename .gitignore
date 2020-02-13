@@ -70,3 +70,7 @@ cpu/x86/uefi/edk2
 
 # macOS files
 *.DS_Store
+
+#beesmart temp files
+IP_BR_DATA.dat
+NODELIST.dat
