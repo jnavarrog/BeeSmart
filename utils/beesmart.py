@@ -5,7 +5,7 @@ import subprocess
 import os 
 import threading
 import time
-from coapthon.client.helperclient import HelperClient
+#from coapthon.client.helperclient import HelperClient
 import urllib2
 import datetime
 import re
@@ -35,6 +35,8 @@ def main():
 	global ipv6_tunnel
 	global idapiario
 	global descapiario
+	global enablelog
+	global connect3g
 	f=open("BEESMART.conf","r")
 	line=f.readlines()
 	#load BEESMART.conf configuration parameters
@@ -74,7 +76,13 @@ def main():
 			idapiario=idapiario.rstrip()
 		elif "D_APIARIO_DESC" in x:
 			descapiario=x.split("=")[1]
-			descapiario=descapiario.rstrip()	
+			descapiario=descapiario.rstrip()
+		elif "D_ENABLE_LOG" in x:
+			enablelog=x.split("=")[1]
+			enablelog=enablelog.rstrip()
+		elif "D_USE_3GMODEM" in x:
+			connect3g=x.split("=")[1]
+			connect3g=connect3g.rstrip()	
 	LOG("Configuración cargada")
 	f.close()
 	
@@ -116,7 +124,7 @@ def get_nodelist():
    		f.close
    		accessfile.release()
    		nodeip=""
-   		#print(nodeip)
+   		print(nodeip)
    		LOG("Se actualiza la lista de nodos")
    		time.sleep(float(time_upd_nlist))
    				
@@ -243,10 +251,11 @@ def mosquitto_init():
 	sub.loop_forever()
 	
 def LOG(msg):
-	print(msg)
-	ts = time.time()
-	timestamp = datetime.datetime.fromtimestamp(ts).strftime("%d-%m-%Y (%H:%M:%S.%f)")
-	os.system("echo '["+timestamp+"] "+msg+"' >> BEESMART.log")
+	if "yes" in enablelog:
+		print(msg)
+		ts = time.time()
+		timestamp = datetime.datetime.fromtimestamp(ts).strftime("%d-%m-%Y (%H:%M:%S.%f)")
+		os.system("echo '["+timestamp+"] "+msg+"' >> BEESMART.log")
 
 	
 if __name__== "__main__":
