@@ -20,7 +20,6 @@ global accessfile
 accessfile = threading.Lock()
 
 def main():
-	LOG("Inicia beesmart.py")
 	global broker
 	global port
 	global user
@@ -35,7 +34,7 @@ def main():
 	global ipv6_tunnel
 	global idapiario
 	global descapiario
-	global enablelog
+	global enable_log
 	global connect3g
 	f=open("BEESMART.conf","r")
 	line=f.readlines()
@@ -78,8 +77,8 @@ def main():
 			descapiario=x.split("=")[1]
 			descapiario=descapiario.rstrip()
 		elif "D_ENABLE_LOG" in x:
-			enablelog=x.split("=")[1]
-			enablelog=enablelog.rstrip()
+			enable_log=x.split("=")[1]
+			enable_log=enable_log.rstrip()
 		elif "D_USE_3GMODEM" in x:
 			connect3g=x.split("=")[1]
 			connect3g=connect3g.rstrip()	
@@ -251,7 +250,7 @@ def mosquitto_init():
 	sub.loop_forever()
 	
 def LOG(msg):
-	if "yes" in enablelog:
+	if "yes" in enable_log:
 		print(msg)
 		ts = time.time()
 		timestamp = datetime.datetime.fromtimestamp(ts).strftime("%d-%m-%Y (%H:%M:%S.%f)")
