@@ -86,7 +86,7 @@ def main():
 	LOG("Configuración cargada")
 	f.close()
 	
-	if "yes" in connect3g 
+	if "yes" in connect3g:
 		modem3g("connect")
 	
 	f=open("NODELIST.dat","w")
@@ -157,10 +157,10 @@ def run_tunslip():
 	#print(stdout)
 	
 #def on_connect(client, userdata, flags, rc):
-	#print("Connected With Result Code: {}".format(rc))
+	LOG("Connected With Result Code: {}".format(rc))
 
 #def on_disconnect(client, userdata, rc):
-	#print("Client Got Disconnected")
+	LOG("Client Got Disconnected")
 	
 #def on_subscribe(client, userdata, mid, granted_qos):
 	#print("Client Suscribed")
