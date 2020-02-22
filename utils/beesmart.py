@@ -81,9 +81,13 @@ def main():
 			enable_log=enable_log.rstrip()
 		elif "D_USE_3GMODEM" in x:
 			connect3g=x.split("=")[1]
-			connect3g=connect3g.rstrip()	
+			connect3g=connect3g.rstrip()
+			
 	LOG("Configuración cargada")
 	f.close()
+	
+	if "yes" in connect3g 
+		modem3g("connect")
 	
 	f=open("NODELIST.dat","w")
 	f.close()
@@ -248,6 +252,15 @@ def mosquitto_init():
 	pub.connect(broker, port)
 	sub.subscribe(idapiario+"/send/#", qos=1)
 	sub.loop_forever()
+	
+def modem3g(action):
+	out = subprocess.Popen(['sakis3g',action], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        stdout,stderr = out.communicate()
+	#print(stdout)
+	if "MF190 connected to Antel" in stdout:
+		LOG("Conectado a red 3g")
+	if "Disconnected." in stdout or "Not connected." in stdout:
+		LOG("Desconectado de red 3g")
 	
 def LOG(msg):
 	if "yes" in enable_log:
