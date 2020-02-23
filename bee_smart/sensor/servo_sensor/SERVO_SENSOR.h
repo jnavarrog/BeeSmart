@@ -7,7 +7,8 @@ typedef enum Servo_Configuration {
   SERVO_CONFIGURATION_START,
   SERVO_CONFIGURATION_POSITION,
   SERVO_CONFIGURATION_PIN,
-  SERVO_CONFIGURATION_PORT
+  SERVO_CONFIGURATION_PORT,
+  SERVO_CONFIGURATION_STOP_DELAY
 } Servo_Configuration;
 
 typedef enum Servo_Value {
@@ -15,6 +16,7 @@ typedef enum Servo_Value {
   SERVO_VALUE_CLOSE,
   SERVO_VALUE_OPEN,
   SERVO_VALUE_STOP,
+  SERVO_VALUE_POSITION
 } Servo_Value;
 
 typedef enum Servo_Response {

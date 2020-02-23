@@ -29,10 +29,17 @@ CONTIKIDIRS+=bee_smart/lib/ow
 CONTIKIDIRS+=bee_smart/lib/ds18b20
 CONTIKIDIRS+=bee_smart/sensor/ds18b20_sensor
 PROJECT_SOURCEFILES += DS18B20_SENSOR.c
+
 MODULES += bee_smart/lib/servo
 MODULES += bee_smart/sensor/servo_sensor
 PROJECT_SOURCEFILES += SERVO_SENSOR.c
 CONTIKIDIRS+=bee_smart/lib/servo
 CONTIKIDIRS+=bee_smart/sensor/servo_sensor
+
+MODULES += bee_smart/lib/hx711
+MODULES += bee_smart/sensor/hx711_sensor
+PROJECT_SOURCEFILES += HX711_SENSOR.c
+CONTIKIDIRS+=bee_smart/lib/hx711
+CONTIKIDIRS+=bee_smart/sensor/hx711_sensor
 
 include $(CONTIKI)/Makefile.include

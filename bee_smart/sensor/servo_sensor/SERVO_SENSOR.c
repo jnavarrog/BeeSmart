@@ -1,11 +1,13 @@
 #include <SERVO_SENSOR.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <contiki.h>
 
 Servo_Port servo_port = 0;
 Servo_Pin servo_pin = 0;
 Servo_Object servo_object;
 Servo_Position servo_position = SERVO_POSITION_0;
+int servo_stop_delay = CLOCK_SECOND;
 
 bool servo_sensor_ready_to_start() {
   return servo_port >= 0 && servo_pin >= 0 && servo_port >= 0;
@@ -60,6 +62,21 @@ int servo_sensor_close() {
   return SERVO_RESPONSE_SUCCESS;
 }
 
+PROCESS(servo_stop_pr, "Servo stop");
+PROCESS_THREAD(servo_stop_pr, ev, data) {
+  static struct etimer period;
+  PROCESS_BEGIN();
+  etimer_set(&period, servo_stop_delay);
+  PROCESS_WAIT_UNTIL(etimer_expired(&period));
+  servo_sensor_stop();
+  PROCESS_END();
+}
+
+int servo_sensor_stop_with_delay() {
+  process_start(&servo_stop_pr, NULL);
+  return SERVO_RESPONSE_SUCCESS;
+}
+
 /*--------------------------SENSOR INTERFACE----------------------------------*/
 const struct sensors_sensor servo;
 
@@ -75,7 +92,10 @@ static int value(int type) {
     return (int) servo_sensor_open();
 
   case SERVO_VALUE_STOP:
-    return (int) servo_sensor_stop();
+    return (int) servo_sensor_stop_with_delay();
+
+  case SERVO_VALUE_POSITION:
+    return (int) servo_position;
   }
 
   return SERVO_RESPONSE_ERROR;
@@ -108,6 +128,9 @@ static int configure(int type, int c) {
       servo_position = (Servo_Position) c;
       return SERVO_RESPONSE_SUCCESS;
 
+    case SERVO_CONFIGURATION_STOP_DELAY:
+      servo_stop_delay = c;
+      return SERVO_RESPONSE_SUCCESS;
   }
 
   return SERVO_RESPONSE_ERROR;
