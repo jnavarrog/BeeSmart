@@ -72,7 +72,36 @@ PROCESS_THREAD(er_example_server, ev, data)
   coap_activate_resource(&res_servo, "actuators/servo");
 
   while(1) {
-    PROCESS_WAIT_EVENT();
+    etimer_set(&period, SERVO_STOP_DELAY);
+    PROCESS_WAIT_UNTIL(etimer_expired(&period));
+
+    printf("SERVO POSITION %d\n", servo.value(SERVO_VALUE_POSITION));
+    printf("SERVO ACTION %d\n", action);
+
+    if (action == 1) {
+      servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
+      servo.value(SERVO_VALUE_MOVE);
+      action = 0;
+    } else if (action == 0) {
+      servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
+      servo.value(SERVO_VALUE_MOVE);
+      action = 1;
+    }
+
+    hx711.configure(HX711_CONFIGURATION_START_READ, 0);
+    printf("WEIGHT %d%d\n", hx711.value(HX711_VALUE_WEIGHT_HIGH), hx711.value(HX711_VALUE_WEIGHT_LOW));
+
+    for(int i = 0; i < ds18b20_amount_int; i++) {
+      ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
+      ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
+
+      int address_low = ds18b20.value(DS18B20_VALUE_ADDRESS_LOW);
+      int address_high = ds18b20.value(DS18B20_VALUE_ADDRESS_HIGH);
+      int integer = ds18b20.value(DS18B20_VALUE_TEMPERATURE_INTEGER);
+      int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
+
+      printf("Address %x%x: %d.%d\n", address_high, address_low, integer, decimal);
+    }
   }
 
   ds18b20.configure(DS18B20_CONFIGURATION_STOP, 0);
