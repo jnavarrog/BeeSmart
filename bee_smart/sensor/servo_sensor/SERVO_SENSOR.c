@@ -64,16 +64,23 @@ int servo_sensor_close() {
 
 PROCESS(servo_stop_pr, "Servo stop");
 PROCESS_THREAD(servo_stop_pr, ev, data) {
-  static struct etimer period;
+  static struct etimer servo_stop_delay_period;
+  static Servo_Object * servo_object_ptr;
+
+  if ((Servo_Object *) data) {
+    servo_object_ptr = (Servo_Object *) data;
+  }
+
   PROCESS_BEGIN();
-  etimer_set(&period, servo_stop_delay);
-  PROCESS_WAIT_UNTIL(etimer_expired(&period));
-  servo_sensor_stop();
+  etimer_set(&servo_stop_delay_period, servo_stop_delay);
+  PROCESS_WAIT_UNTIL(etimer_expired(&servo_stop_delay_period));
+  servo_stop(servo_object_ptr);
   PROCESS_END();
 }
 
 int servo_sensor_stop_with_delay() {
-  process_start(&servo_stop_pr, NULL);
+  // TODO: Por alguna razon si llamo al proceso se cambia la referencia del puntero
+  // process_start(&servo_stop_pr, &servo_object);
   return SERVO_RESPONSE_SUCCESS;
 }
 

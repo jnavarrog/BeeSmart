@@ -36,7 +36,7 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     int integer = ds18b20.value(DS18B20_VALUE_TEMPERATURE_INTEGER);
     int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
 
-    printf("Address %x%x: %d,%d\n", address_high, address_low, integer, decimal);
+    printf("Address %x%x: %d.%d\n", address_high, address_low, integer, decimal);
     sprintf(message + strlen(message), ",%d.%d", integer, decimal);
   }
 
