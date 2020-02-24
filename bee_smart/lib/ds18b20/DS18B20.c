@@ -132,16 +132,12 @@ Ds18b20_Object* ds18b20_search_all(
   Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount
 ) {
   uint8_t i = 0;
-  uint64_t discrepancies = 0;
   OneWire_Object * ow_object;
   ow_object = (OneWire_Object *) malloc(sizeof(OneWire_Object));
   ow_init(ow_object, port, pin);
 
   for(i = 0; i < max_amount; i++) {
-    discrepancies = ds18b20_search_once(i, ds18b20_objects, ow_object);
-    if (discrepancies == 0) {
-      return ds18b20_objects;
-    }
+    ds18b20_search_once(i, ds18b20_objects, ow_object);
   }
 
   return ds18b20_objects;

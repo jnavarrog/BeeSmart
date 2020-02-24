@@ -42,7 +42,7 @@
 #define LOG_LEVEL_APP LOG_LEVEL_DBG
 
 //sensores
-#define DS18B20_AMOUNT_INT 4
+#define DS18B20_AMOUNT_INT 8
 
 //definir la hopping sequence de tsch
 #define TSCH_CONF_DEFAULT_HOPPING_SEQUENCE TSCH_HOPPING_SEQUENCE_1_1
@@ -65,16 +65,16 @@
 //#define LOG_CONF_LEVEL_MAC                         LOG_LEVEL_DBG
 //#define LOG_CONF_LEVEL_FRAMER                      LOG_LEVEL_DBG
 
-/* Default IEEE 802.15.4e hopping sequences, obtained from https://gist.github.com/twatteyne/2e22ee3c1a802b685695 
+/* Default IEEE 802.15.4e hopping sequences, obtained from https://gist.github.com/twatteyne/2e22ee3c1a802b685695
 16 channels, sequence length 16
 #define TSCH_HOPPING_SEQUENCE_16_16 (uint8_t[]){ 16, 17, 23, 18, 26, 15, 25, 22, 19, 11, 12, 13, 24, 14, 20, 21 }
 4 channels, sequence length 16
 #define TSCH_HOPPING_SEQUENCE_4_16 (uint8_t[]){ 20, 26, 25, 26, 15, 15, 25, 20, 26, 15, 26, 25, 20, 15, 20, 25 }
-4 channels, sequence length 4 
+4 channels, sequence length 4
 #define TSCH_HOPPING_SEQUENCE_4_4 (uint8_t[]){ 15, 25, 26, 20 }
-2 channels, sequence length 2 
+2 channels, sequence length 2
 #define TSCH_HOPPING_SEQUENCE_2_2 (uint8_t[]){ 20, 25 }
-1 channel, sequence length 1 
+1 channel, sequence length 1
 #define TSCH_HOPPING_SEQUENCE_1_1 (uint8_t[]){ 20 }*/
 
 #endif /* PROJECT_CONF_H_ */
