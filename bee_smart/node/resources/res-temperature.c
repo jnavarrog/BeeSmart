@@ -20,30 +20,39 @@ RESOURCE(
   res_delete_handler
 );
 
+//GET
 static void
-res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset){
+res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
+{
+
   const char *len = NULL;
+
   char message[62];
-
+  sprintf(message, "Temp:");
   int ds18b20_amount_int_res = DS18B20_AMOUNT_INT;
-
+  
   for(int i = 0; i < ds18b20_amount_int_res; i++) {
-    ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
-    ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
+      ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
+      ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
 
-    int address_low = ds18b20.value(DS18B20_VALUE_ADDRESS_LOW);
-    int address_high = ds18b20.value(DS18B20_VALUE_ADDRESS_HIGH);
-    int integer = ds18b20.value(DS18B20_VALUE_TEMPERATURE_INTEGER);
-    int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
+      int address_low = ds18b20.value(DS18B20_VALUE_ADDRESS_LOW);
+      int address_high = ds18b20.value(DS18B20_VALUE_ADDRESS_HIGH);
+      int integer = ds18b20.value(DS18B20_VALUE_TEMPERATURE_INTEGER);
+      int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
 
-    printf("Address %x%x: %d.%d\n", address_high, address_low, integer, decimal);
-    sprintf(message + strlen(message), ",%d.%d", integer, decimal);
-  }
+      printf("Address %x%x: %d,%d\n", address_high, address_low, integer, decimal);
+     
+      sprintf(message + strlen(message), "|%d.%d",integer, decimal);		  
+            
+  }//end for
+  sprintf(message + strlen(message), "|");		  
+  printf("MESSAGE LEN: %d\n",strlen(message));
 
-  sprintf(message + strlen(message), ",");
+  //----------------------------------------------------------------------------------------------/
 
   int length = strlen(message);
 
+  /* The query string can be retrieved by rest_get_query() or parsed for its key-value pairs. */
   if(coap_get_query_variable(request, "len", &len)) {
     length = atoi(len);
     if(length < 0) {
@@ -57,12 +66,13 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     memcpy(buffer, message, length);
   }
 
-  coap_set_header_content_format(response, TEXT_PLAIN);
+  coap_set_header_content_format(response, TEXT_PLAIN); /* text/plain is the default, hence this option could be omitted. */
   coap_set_header_etag(response, (uint8_t *)&length, 1);
   coap_set_payload(response, buffer, length);
 
-  printf("[LOG: User] GET TEMPERATURE successful\n");
-}
+  printf("[LOG: User] GET successful\n");
+
+}// end get
 
 static void res_post_handler(
   coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset

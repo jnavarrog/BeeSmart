@@ -42,7 +42,7 @@
 #define LOG_LEVEL_APP LOG_LEVEL_DBG
 
 //sensores
-#define DS18B20_AMOUNT_INT 8
+#define DS18B20_AMOUNT_INT 4
 
 //definir la hopping sequence de tsch
 #define TSCH_CONF_DEFAULT_HOPPING_SEQUENCE TSCH_HOPPING_SEQUENCE_1_1
