@@ -61,10 +61,9 @@ static void res_post_handler(
     
     printf("DATA INT: %d\n", action);
 
-    if (action == 1) {
+   if (action == 1) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
       servo.value(SERVO_VALUE_MOVE);
-      servo.value(SERVO_VALUE_STOP);
     } else if (action == 0) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
       servo.value(SERVO_VALUE_MOVE);
