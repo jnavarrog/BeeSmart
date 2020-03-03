@@ -55,10 +55,11 @@ static void res_post_handler(
   coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset
 ) {
 
-	const uint8_t * payload;
-
-	if (coap_get_payload(request, &payload)) {
+    const uint8_t * payload;
+    coap_get_payload(request, &payload);
     int action = atoi((const char *) payload);
+    
+    printf("DATA INT: %d\n", action);
 
     if (action == 1) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
@@ -69,7 +70,7 @@ static void res_post_handler(
       servo.value(SERVO_VALUE_MOVE);
       servo.value(SERVO_VALUE_STOP);
     }
-  }
+
 
 	printf("DATA: %s\n", payload);
 
