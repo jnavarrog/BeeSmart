@@ -81,6 +81,7 @@ static int value(int type) {
     return (int) servo_sensor_stop();
 
   case SERVO_VALUE_POSITION:
+  printf("%d\n", servo_position);
     return (int) servo_position;
   }
 
@@ -107,6 +108,7 @@ static int configure(int type, int c) {
       return SERVO_RESPONSE_SUCCESS;
 
     case SERVO_CONFIGURATION_POSITION:
+      printf("%d\n", c);
       servo_position = (Servo_Position) c;
       return SERVO_RESPONSE_SUCCESS;
   }

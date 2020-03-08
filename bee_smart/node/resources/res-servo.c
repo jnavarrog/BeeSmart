@@ -4,8 +4,8 @@
 #include "coap-engine.h"
 #include <SERVO_SENSOR.h>
 
-#define SERVO_OPEN SERVO_POSITION_9
-#define SERVO_CLOSE SERVO_POSITION_7
+#define SERVO_OPEN SERVO_SENSOR_OPEN_POSITION
+#define SERVO_CLOSE SERVO_SENSOR_CLOSE_POSITION
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -58,16 +58,17 @@ static void res_post_handler(
     const uint8_t * payload;
     coap_get_payload(request, &payload);
     int action = atoi((const char *) payload);
-    
+
     printf("DATA INT: %d\n", action);
 
    if (action == 1) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
       servo.value(SERVO_VALUE_MOVE);
+      // FALTA UN DELAY ACA servo.value(SERVO_VALUE_STOP);
     } else if (action == 0) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
       servo.value(SERVO_VALUE_MOVE);
-      servo.value(SERVO_VALUE_STOP);
+      // FALTA UN DELAY ACA servo.value(SERVO_VALUE_STOP);
     }
 
 

@@ -24,7 +24,6 @@ static void res_get_handler(
   const char *len = NULL;
   char message[62];
 
-  hx711.configure(HX711_CONFIGURATION_START_READ, 0);
   sprintf(message, "%d%d", hx711.value(HX711_VALUE_WEIGHT_HIGH), hx711.value(HX711_VALUE_WEIGHT_LOW));
 
   int length = strlen(message);

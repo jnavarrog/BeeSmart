@@ -52,7 +52,7 @@ void pwm_set(Servo_Object * servo_object_ptr) {
     return;
   }
 
-  Servo_Position position = servo_object_ptr->position << 2;
+  Servo_Position position = servo_object_ptr->position;
 
   if (position < (Servo_Position) PWM_MIN) {
     position = (Servo_Position) PWM_MIN;
@@ -69,6 +69,7 @@ Servo_Object servo_init(Servo_Pin pin) {
   Servo_Object servo_object;
 
   servo_object.pin = pin;
+  servo_object.init = true;
   servo_object.position = 0;
   servo_object.pwm_open = false;
 

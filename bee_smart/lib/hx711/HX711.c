@@ -1,5 +1,4 @@
 #include <HX711.h>
-#include <stdio.h>
 
 #define HX711_SCK_1_TIME_OFF 60
 #define HX711_SCK_0_TIME_DATA 1
@@ -28,6 +27,7 @@ void hx711_reset();
 void hx711_start();
 void hx711_stop();
 Hx711_Weight hx711_read_weight_sample();
+Hx711_Weight hx711_get_reading();
 
 static Hx711_Handler hx711_handler = {
   .next = NULL,
@@ -75,10 +75,11 @@ void hx711_set_interrupt_handler() {
 
 static void hx711_handler_function(Hx711_Pin_Mask pin_mask) {
   hx711_weight_samples[iteration] = hx711_read_weight_sample(hx711_object);
+
   iteration++;
   iteration %= HX711_AVERAGE_SAMPLES;
 
-  if (iteration == HX711_AVERAGE_SAMPLES) {
+  if (iteration == HX711_AVERAGE_SAMPLES - 1) {
     uint8_t j = 0;
     Hx711_Weight average = 0;
 
@@ -139,4 +140,8 @@ Hx711_Weight hx711_read_weight_sample() {
   hx711_set_interrupts(hx711_object.pin_dout);
 
   return weight;
+}
+
+Hx711_Weight hx711_get_reading() {
+  return hx711_object.weight;
 }
