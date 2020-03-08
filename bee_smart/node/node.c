@@ -71,9 +71,7 @@ static struct etimer period;
   coap_activate_resource(&res_servo, "actuators/servo");
 
   while(1) {
-    etimer_set(&period, CLOCK_SECOND);
-    PROCESS_WAIT_UNTIL(etimer_expired(&period));
-    printf("WEIGHT %d%d\n", hx711.value(HX711_VALUE_WEIGHT_HIGH), hx711.value(HX711_VALUE_WEIGHT_LOW));
+    PROCESS_WAIT_EVENT();
   }
 
   ds18b20.configure(DS18B20_CONFIGURATION_STOP, 0);
