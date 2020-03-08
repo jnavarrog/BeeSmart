@@ -37,6 +37,8 @@ AUTOSTART_PROCESSES(&er_example_server);
 
 PROCESS_THREAD(er_example_server, ev, data)
 {
+static struct etimer period;
+
   PROCESS_BEGIN();
 
   SENSORS_ACTIVATE(ds18b20);
@@ -55,6 +57,7 @@ PROCESS_THREAD(er_example_server, ev, data)
   hx711.configure(HX711_CONFIGURATION_PORT, hx711_port_int);
   hx711.configure(HX711_CONFIGURATION_PIN_DOUT, hx711_pin_dout_int);
   hx711.configure(HX711_CONFIGURATION_PIN_SCK, hx711_pin_sck_int);
+  hx711.configure(HX711_CONFIGURATION_START_READ, 0);
 
   PROCESS_PAUSE();
 
@@ -68,7 +71,9 @@ PROCESS_THREAD(er_example_server, ev, data)
   coap_activate_resource(&res_servo, "actuators/servo");
 
   while(1) {
-    PROCESS_WAIT_EVENT();
+    etimer_set(&period, CLOCK_SECOND);
+    PROCESS_WAIT_UNTIL(etimer_expired(&period));
+    printf("WEIGHT %d%d\n", hx711.value(HX711_VALUE_WEIGHT_HIGH), hx711.value(HX711_VALUE_WEIGHT_LOW));
   }
 
   ds18b20.configure(DS18B20_CONFIGURATION_STOP, 0);
