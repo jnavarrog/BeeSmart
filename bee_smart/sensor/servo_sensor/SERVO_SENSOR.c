@@ -3,14 +3,12 @@
 #include <stdlib.h>
 #include <contiki.h>
 
-Servo_Port servo_port = 0;
 Servo_Pin servo_pin = 0;
 Servo_Object servo_object;
 Servo_Position servo_position = SERVO_POSITION_0;
-int servo_stop_delay = CLOCK_SECOND;
 
 bool servo_sensor_ready_to_start() {
-  return servo_port >= 0 && servo_pin >= 0 && servo_port >= 0;
+  return servo_pin >= 0;
 }
 
 bool servo_sensor_ready_to_move() {
@@ -22,7 +20,7 @@ int servo_sensor_start() {
     return SERVO_RESPONSE_ERROR;
   }
 
-  servo_object = servo_init(servo_port, servo_pin);
+  servo_object = servo_init(servo_pin);
   return SERVO_RESPONSE_SUCCESS;
 }
 
@@ -80,7 +78,7 @@ static int value(int type) {
     return (int) servo_sensor_open();
 
   case SERVO_VALUE_STOP:
-    return (int) servo_sensor_stop_with_delay();
+    return (int) servo_sensor_stop();
 
   case SERVO_VALUE_POSITION:
     return (int) servo_position;
@@ -108,16 +106,8 @@ static int configure(int type, int c) {
       servo_pin = (Servo_Pin) c;
       return SERVO_RESPONSE_SUCCESS;
 
-    case SERVO_CONFIGURATION_PORT:
-      servo_port = (Servo_Port) c;
-      return SERVO_RESPONSE_SUCCESS;
-
     case SERVO_CONFIGURATION_POSITION:
       servo_position = (Servo_Position) c;
-      return SERVO_RESPONSE_SUCCESS;
-
-    case SERVO_CONFIGURATION_STOP_DELAY:
-      servo_stop_delay = c;
       return SERVO_RESPONSE_SUCCESS;
   }
 

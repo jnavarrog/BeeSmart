@@ -17,10 +17,7 @@ int ds18b20_port_int = GPIO_HAL_NULL_PORT;
 int ds18b20_pin_int = IOID_23;
 int ds18b20_amount_int = DS18B20_AMOUNT_INT;
 
-#define SERVO_STOP_DELAY CLOCK_SECOND * 3
-
 int servo_pin_int = IOID_12;
-int servo_port_int = GPIO_HAL_NULL_PORT;
 
 int hx711_port_int = GPIO_HAL_NULL_PORT;
 int hx711_pin_dout_int = IOID_25;
@@ -49,10 +46,9 @@ PROCESS_THREAD(er_example_server, ev, data)
   ds18b20.configure(DS18B20_CONFIGURATION_START, 0);
 
   SENSORS_ACTIVATE(servo);
-  servo.configure(SERVO_CONFIGURATION_PORT, servo_port_int);
   servo.configure(SERVO_CONFIGURATION_PIN, servo_pin_int);
   servo.configure(SERVO_CONFIGURATION_START, 0);
-  servo.configure(SERVO_CONFIGURATION_STOP_DELAY, SERVO_STOP_DELAY);
+  servo.configure(SERVO_CONFIGURATION_STOP, 0);
   servo.value(SERVO_VALUE_STOP);
 
   SENSORS_ACTIVATE(hx711);

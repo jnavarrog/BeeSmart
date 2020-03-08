@@ -13,6 +13,28 @@ uint8_t iteration = 0;
 Hx711_Weight hx711_weight_samples[HX711_AVERAGE_SAMPLES];
 Hx711_Object hx711_object;
 
+void hx711_set(Hx711_Port port, Hx711_Pin pin);
+void hx711_clr(Hx711_Port port, Hx711_Pin pin);
+bool hx711_get(Hx711_Port port, Hx711_Pin pin);
+void hx711_delay(uint16_t us);
+void hx711_set_output(Hx711_Port port, Hx711_Pin pin);
+void hx711_set_input(Hx711_Port port, Hx711_Pin pin);
+void hx711_set_interrupts(Hx711_Pin pin);
+void hx711_unset_interrupts(Hx711_Pin pin);
+void hx711_set_interrupt_handler();
+static void hx711_handler_function(Hx711_Pin_Mask pin_mask);
+Hx711_Object hx711_init(Hx711_Port port, Hx711_Pin pin_dout, Hx711_Pin pin_sck);
+void hx711_reset();
+void hx711_start();
+void hx711_stop();
+Hx711_Weight hx711_read_weight_sample();
+
+static Hx711_Handler hx711_handler = {
+  .next = NULL,
+  .handler = hx711_handler_function,
+  .pin_mask = gpio_hal_pin_to_mask(0),
+};
+
 void hx711_set(Hx711_Port port, Hx711_Pin pin) {
   gpio_hal_arch_write_pin(port, pin, 1);
 }
@@ -60,25 +82,19 @@ static void hx711_handler_function(Hx711_Pin_Mask pin_mask) {
     uint8_t j = 0;
     Hx711_Weight average = 0;
 
-    for (j = 0; j < i; j++) {
+    for (j = 0; j < iteration; j++) {
       average += hx711_weight_samples[j];
     }
 
-  hx711_object.weight = average / HX711_AVERAGE_SAMPLES;
+    hx711_object.weight = average / HX711_AVERAGE_SAMPLES;
+  }
 }
-
-static Hx711_Handler hx711_handler = {
-  .next = NULL,
-  .handler = hx711_handler_function,
-  .pin_mask = gpio_hal_pin_to_mask(0),
-};
 
 Hx711_Object hx711_init(Hx711_Port port, Hx711_Pin pin_dout, Hx711_Pin pin_sck) {
   hx711_object.port = port;
   hx711_object.pin_dout = pin_dout;
   hx711_object.pin_sck = pin_sck;
   hx711_object.weight = 0;
-  hx711_object.reading_type = NONE;
   hx711_object.handler = &hx711_handler;
   hx711_start(hx711_object);
 
@@ -86,9 +102,9 @@ Hx711_Object hx711_init(Hx711_Port port, Hx711_Pin pin_dout, Hx711_Pin pin_sck) 
 }
 
 void hx711_reset() {
-  hx711_set(hx711_object.port, hx711_object.in_dout);
+  hx711_set(hx711_object.port, hx711_object.pin_dout);
   hx711_delay(HX711_SCK_1_TIME_OFF);
-  hx711_clr(hx711_object.port, hx711_objectpin_dout);
+  hx711_clr(hx711_object.port, hx711_object.pin_dout);
 }
 
 void hx711_start() {
@@ -97,7 +113,7 @@ void hx711_start() {
   hx711_clr(hx711_object.port, hx711_object.pin_sck);
   hx711_reset(hx711_object);
   hx711_set_interrupts(hx711_object.pin_dout);
-  hx711_object.handler.pin_mask = gpio_hal_pin_to_mask(hx711_object.pin_dout);
+  hx711_object.handler->pin_mask = gpio_hal_pin_to_mask(hx711_object.pin_dout);
   hx711_set_interrupt_handler(hx711_object);
 }
 
