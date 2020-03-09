@@ -40,6 +40,17 @@
 #include "contiki.h"
 
 #include <stdio.h> /* For printf() */
+
+void imprimir(){
+
+printf("antes\n");
+rtimer_clock_t end = (RTIMER_NOW() + RTIMER_SECOND*3);
+while(RTIMER_CLOCK_LT(RTIMER_NOW(), end)) {
+   /* do stuff */
+}
+printf("despues\n");
+
+}
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
 AUTOSTART_PROCESSES(&hello_world_process);
@@ -51,10 +62,12 @@ PROCESS_THREAD(hello_world_process, ev, data)
   PROCESS_BEGIN();
 
   /* Setup a periodic timer that expires after 10 seconds. */
-  etimer_set(&timer, CLOCK_SECOND * 10);
+  etimer_set(&timer, CLOCK_SECOND * 5);
 
   while(1) {
     printf("Hello, world\n");
+    
+    imprimir();
 
     /* Wait for the periodic timer to expire and then restart the timer. */
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));

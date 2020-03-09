@@ -21,6 +21,15 @@ RESOURCE(
   res_delete_handler
 );
 
+void delay(int sec){
+	watchdog_stop();
+	rtimer_clock_t end = (RTIMER_NOW() + RTIMER_SECOND*sec);
+	while(RTIMER_CLOCK_LT(RTIMER_NOW(), end)) {
+			/* do stuff */
+	}
+	watchdog_start();
+}
+
 static void res_get_handler(
   coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset
 ) {
@@ -61,14 +70,21 @@ static void res_post_handler(
 
     printf("DATA INT: %d\n", action);
 
-   if (action == 1) {
+   if (action == 1 && servo.value(SERVO_VALUE_POSITION) != SERVO_OPEN) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
       servo.value(SERVO_VALUE_MOVE);
-      // FALTA UN DELAY ACA servo.value(SERVO_VALUE_STOP);
-    } else if (action == 0) {
+      printf("antes\n");
+      delay(3);
+      printf("despues\n");
+      servo.value(SERVO_VALUE_STOP);
+      
+    } else if (action == 0 && servo.value(SERVO_VALUE_POSITION) == SERVO_OPEN) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
-      servo.value(SERVO_VALUE_MOVE);
-      // FALTA UN DELAY ACA servo.value(SERVO_VALUE_STOP);
+      servo.value(SERVO_VALUE_MOVE);   
+      printf("antes\n");
+      delay(3);
+      printf("despues\n");                 
+      servo.value(SERVO_VALUE_STOP);
     }
 
 

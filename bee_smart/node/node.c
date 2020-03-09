@@ -37,7 +37,7 @@ AUTOSTART_PROCESSES(&er_example_server);
 
 PROCESS_THREAD(er_example_server, ev, data)
 {
-static struct etimer period;
+//static struct etimer period;
 
   PROCESS_BEGIN();
 
