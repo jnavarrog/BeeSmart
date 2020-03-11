@@ -41,9 +41,6 @@ void pwm_stop(Servo_Object * servo_object_ptr) {
 
   while(!ti_lib_prcm_load_get());
 
-  ti_lib_ioc_pin_type_gpio_input(servo_object_ptr->pin);
-  ti_lib_ioc_io_input_set(servo_object_ptr->pin, IOC_INPUT_DISABLE);
-
   servo_object_ptr->pwm_open = false;
 }
 

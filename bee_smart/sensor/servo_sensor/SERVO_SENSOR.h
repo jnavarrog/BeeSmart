@@ -1,8 +1,8 @@
 #include <SERVO.h>
 #include "lib/sensors.h"
 
-#define SERVO_SENSOR_OPEN_POSITION 200
-#define SERVO_SENSOR_CLOSE_POSITION 20
+#define SERVO_SENSOR_OPEN_POSITION 1
+#define SERVO_SENSOR_CLOSE_POSITION 254
 
 extern const struct sensors_sensor servo;
 
