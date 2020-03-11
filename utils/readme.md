@@ -116,6 +116,12 @@ En este archivo se almacena la configuración principal del programa beesmart.py
 *L_COAP_DATA_RESOURCES*: Lista de recursos CoAP que se consultarán automaticamente cada T_REQUEST_ALL_DATA segundos
 *D_USB_PORT_TUN*: Ubicación en /dev del puerto USB al cual se conecta el BR
 *D_IPV6_TUNNEL*: IPv6 que tomará la RPI (todos los nodos usarán el mismo prefijo)
+*D_ENABLE_LOG: Habilitar log yes o no
+*D_USE_3GMODEM: Conectarse usando el modem 3g yes o no
+*D_ENABLE_CHK3GCON: Chequear y en caso de encontrar fallas tratar de reiniciar la conexión 3g yes o no
+*D_ENABLE_CHKTUNNEL: Chequear y en caso de encontrar fallas tratar de reiniciar el tunel yes o no
+*T_CHK3GCON: Cada cuanto tiempo chequear la conexión 3g
+*T_CHKTUNNEL: Cada cuandto tiempo chequear el tunel
 
 ###Ejemplo
 
@@ -133,4 +139,10 @@ T_COAP_MAX_WAIT_TIME=5
 L_COAP_DATA_RESOURCES=test,sensors/temperature/all,sensors/weight,actuators/servo,sensors/temperature/temperature
 D_USB_PORT_TUN=/dev/ttyACM0
 D_IPV6_TUNNEL=fd00::1/64
+D_ENABLE_LOG=yes
+D_USE_3GMODEM=no
+D_ENABLE_CHK3GCON=no
+D_ENABLE_CHKTUNNEL=yes
+T_CHK3GCON=5
+T_CHKTUNNEL=5
 ```
