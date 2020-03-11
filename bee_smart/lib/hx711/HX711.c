@@ -84,10 +84,10 @@ static void hx711_handler_function(Hx711_Pin_Mask pin_mask) {
     Hx711_Weight average = 0;
 
     for (j = 0; j < iteration; j++) {
-      average += hx711_weight_samples[j];
+      average += hx711_weight_samples[j] / HX711_AVERAGE_SAMPLES;
     }
 
-    hx711_object.weight = average / HX711_AVERAGE_SAMPLES;
+    hx711_object.weight = average;
   }
 }
 

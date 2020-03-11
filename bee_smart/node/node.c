@@ -58,6 +58,11 @@ PROCESS_THREAD(er_example_server, ev, data)
   hx711.configure(HX711_CONFIGURATION_PIN_DOUT, hx711_pin_dout_int);
   hx711.configure(HX711_CONFIGURATION_PIN_SCK, hx711_pin_sck_int);
   hx711.configure(HX711_CONFIGURATION_START_READ, 0);
+  
+  
+  servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
+  servo.value(SERVO_VALUE_MOVE);   
+  servo.value(SERVO_VALUE_STOP);
 
   PROCESS_PAUSE();
 
