@@ -60,7 +60,7 @@ PROCESS_THREAD(er_example_server, ev, data)
   hx711.configure(HX711_CONFIGURATION_START_READ, 0);
   
   
-  servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
+  servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_SENSOR_CLOSE_POSITION);
   servo.value(SERVO_VALUE_MOVE);   
   servo.value(SERVO_VALUE_STOP);
 
