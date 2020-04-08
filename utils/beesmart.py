@@ -191,12 +191,13 @@ def coap_handler(coap_address, method, resource, data):
 	LOG("coap_handler --> coap-client "+coap_address+" "+method+" "+resource+" "+data)	
 	if method is 'get':
 		out = subprocess.Popen(['coap-client', '-v', '0','-B',coap_max_wtime,'-m',method,'coap://['+coap_address+']/'+resource], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		stdout,stderr = out.communicate()
+		datatosend=re.sub('v:1 t:CON.*]\s','',stdout)
+		LOG("coap_handler --> mosquitto_pub "+ datatosend.rstrip())	
+		os.system("mosquitto_pub -p " + port + " -h " +  broker + " -t "+idapiario+"/data -u "+ user+ " -P "+ passw + " -m \"["+timestamp+"]["+coap_address+"]["+resource+"]{"+datatosend.rstrip()+"}\"")
 	if method is 'post' or method is 'put':
-		out = subprocess.Popen(['coap-client', '-v', '0','-B',coap_max_wtime,'-m',method,'-e',data,'coap://['+coap_address+']/'+resource], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)		
-	stdout,stderr = out.communicate()
-	datatosend=re.sub('v:1 t:CON.*]\s','',stdout)
-	LOG("coap_handler --> mosquitto_pub "+ datatosend.rstrip())	
-	os.system("mosquitto_pub -p " + port + " -h " +  broker + " -t "+idapiario+"/data -u "+ user+ " -P "+ passw + " -m \"["+timestamp+"]["+coap_address+"]["+resource+"]{"+datatosend.rstrip()+"}\"")
+		out = subprocess.Popen(['coap-client', '-v', '0','-B',coap_max_wtime,'-m',method,'-e',data,'coap://['+coap_address+']/'+resource], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		stdout,stderr = out.communicate()
 	mutex.release()
 	
  	
@@ -278,7 +279,7 @@ def mosquitto_init():
 	sub.on_unsubscribe = on_unsubscribe
 	sub.on_message = on_message
 	sub.connect(broker, port)
-	#sub.subscribe(idapiario+"/send/#", qos=1)
+	sub.subscribe(idapiario+"/send/#", qos=1)
 	sub.loop_forever()
 	
 def modem3g(action):
