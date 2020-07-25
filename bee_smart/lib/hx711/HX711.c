@@ -75,15 +75,14 @@ void hx711_set_interrupt_handler() {
 
 static void hx711_handler_function(Hx711_Pin_Mask pin_mask) {
   hx711_weight_samples[iteration] = hx711_read_weight_sample(hx711_object);
-
   iteration++;
   iteration %= HX711_AVERAGE_SAMPLES;
 
-  if (iteration == HX711_AVERAGE_SAMPLES - 1) {
+  if (iteration == 0) {
     uint8_t j = 0;
     Hx711_Weight average = 0;
 
-    for (j = 0; j < iteration; j++) {
+    for (j = 0; j < HX711_AVERAGE_SAMPLES; j++) {
       average += hx711_weight_samples[j] / HX711_AVERAGE_SAMPLES;
     }
 

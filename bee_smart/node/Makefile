@@ -42,4 +42,8 @@ PROJECT_SOURCEFILES += HX711_SENSOR.c
 CONTIKIDIRS+=bee_smart/lib/hx711
 CONTIKIDIRS+=bee_smart/sensor/hx711_sensor
 
+MODULES += bee_smart/lib/button
+PROJECT_SOURCEFILES += BUTTON.c
+CONTIKIDIRS+=bee_smart/lib/button
+
 include $(CONTIKI)/Makefile.include

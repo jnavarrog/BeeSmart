@@ -73,18 +73,9 @@ static void res_post_handler(
    if (action == 1 && servo.value(SERVO_VALUE_POSITION) != SERVO_OPEN) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
       servo.value(SERVO_VALUE_MOVE);
-      printf("antes\n");
-      delay(3);
-      printf("despues\n");
-      servo.value(SERVO_VALUE_STOP);
-      
     } else if (action == 0 && servo.value(SERVO_VALUE_POSITION) == SERVO_OPEN) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
-      servo.value(SERVO_VALUE_MOVE);   
-      printf("antes\n");
-      delay(3);
-      printf("despues\n");                 
-      servo.value(SERVO_VALUE_STOP);
+      servo.value(SERVO_VALUE_MOVE);
     }
 
 

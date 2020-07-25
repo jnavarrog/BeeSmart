@@ -24,7 +24,7 @@ static void res_get_handler(
   const char *len = NULL;
   char message[62];
 
-  sprintf(message, "%d%d", hx711.value(HX711_VALUE_WEIGHT_HIGH), hx711.value(HX711_VALUE_WEIGHT_LOW));
+  sprintf(message, "%x%x", hx711.value(HX711_VALUE_WEIGHT_HIGH), hx711.value(HX711_VALUE_WEIGHT_LOW));
 
   int length = strlen(message);
 

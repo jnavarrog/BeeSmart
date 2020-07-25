@@ -8,6 +8,7 @@
 #include <DS18B20_SENSOR.h>
 #include <SERVO_SENSOR.h>
 #include <HX711_SENSOR.h>
+#include <BUTTON.h>
 
 #include "sys/log.h"
 #define LOG_MODULE "App"
@@ -15,13 +16,22 @@
 
 int ds18b20_port_int = GPIO_HAL_NULL_PORT;
 int ds18b20_pin_int = IOID_23;
-int ds18b20_amount_int = DS18B20_AMOUNT_INT;
+int ds18b20_amount_int = 9;//DS18B20_AMOUNT_INT;
 
 int servo_pin_int = IOID_12;
 
 int hx711_port_int = GPIO_HAL_NULL_PORT;
 int hx711_pin_dout_int = IOID_25;
 int hx711_pin_sck_int = IOID_26;
+
+Button_Pin limit_switch_pin = IOID_7;
+Button_Port limit_switch_port = GPIO_HAL_NULL_PORT;
+void limit_switch_on() {
+ servo.value(SERVO_VALUE_STOP);
+}
+void limit_switch_off() {
+  servo.value(SERVO_VALUE_STOP);
+}
 
 extern coap_resource_t
   res_test,
@@ -37,8 +47,6 @@ AUTOSTART_PROCESSES(&er_example_server);
 
 PROCESS_THREAD(er_example_server, ev, data)
 {
-//static struct etimer period;
-
   PROCESS_BEGIN();
 
   SENSORS_ACTIVATE(ds18b20);
@@ -58,27 +66,35 @@ PROCESS_THREAD(er_example_server, ev, data)
   hx711.configure(HX711_CONFIGURATION_PIN_DOUT, hx711_pin_dout_int);
   hx711.configure(HX711_CONFIGURATION_PIN_SCK, hx711_pin_sck_int);
   hx711.configure(HX711_CONFIGURATION_START_READ, 0);
-  
-  
+
   servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_SENSOR_CLOSE_POSITION);
-  servo.value(SERVO_VALUE_MOVE);   
+  servo.value(SERVO_VALUE_MOVE);
   servo.value(SERVO_VALUE_STOP);
+
+  static Button_Object * limit_switch;
+  limit_switch  = button_init(limit_switch_port, limit_switch_pin, &limit_switch_on, &limit_switch_off);
+  printf("%d\n", button_get(limit_switch));
 
   PROCESS_PAUSE();
 
   LOG_INFO("BEESMART - PROYECTO FIN DE CARRERA 2020 - NODO\n");
 
   coap_activate_resource(&res_test, "test");
-  coap_activate_resource(&res_addresstemperature, "sensors/temperature/all");
-  coap_activate_resource(&res_temperature, "sensors/temperature/temperature");
+  coap_activate_resource(&res_temperature, "sensors/temperature/all");
+  coap_activate_resource(&res_addresstemperature, "sensors/temperature/temperature");
   coap_activate_resource(&res_reboot, "commands/reboot");
   coap_activate_resource(&res_weight, "sensors/weight");
   coap_activate_resource(&res_servo, "actuators/servo");
 
+  static struct etimer period;
+
   while(1) {
-    PROCESS_WAIT_EVENT();
+    etimer_set(&period, CLOCK_SECOND * 3);
+    // ds18b20.configure(DS18B20_CONFIGURATION_START, 0);
+
+    PROCESS_WAIT_UNTIL(etimer_expired(&period));
+    // PROCESS_WAIT_EVENT();
   }
 
-  ds18b20.configure(DS18B20_CONFIGURATION_STOP, 0);
   PROCESS_END();
 }
