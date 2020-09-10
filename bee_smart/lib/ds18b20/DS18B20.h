@@ -1,4 +1,6 @@
 #include <OW.h>
+#ifndef DS18B20_H_INCLUDED
+#define DS18B20_H_INCLUDED
 
 typedef OneWire_Port Ds18b20_Port;
 typedef OneWire_Pin Ds18b20_Pin;
@@ -17,7 +19,9 @@ typedef struct Ds18b20_Object {
 } Ds18b20_Object;
 
 extern Ds18b20_Object * ds18b20_search_all(
-  Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount
+  Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount, bool read_from_file
 );
 
 extern void ds18b20_read_temp_from_address(Ds18b20_Object * ds18b20_object);
+
+#endif

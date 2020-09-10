@@ -73,9 +73,11 @@ static void res_post_handler(
    if (action == 1 && servo.value(SERVO_VALUE_POSITION) != SERVO_OPEN) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
       servo.value(SERVO_VALUE_MOVE);
+      delay(3);
     } else if (action == 0 && servo.value(SERVO_VALUE_POSITION) == SERVO_OPEN) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
       servo.value(SERVO_VALUE_MOVE);
+      delay(3);
     }
 
 

@@ -1,5 +1,6 @@
 #include <DS18B20.h>
 #include <stdlib.h>
+#include <ADDRESSES_FILE.h>
 
 #define DS18B20_COMMAND_READ_SCRATCH_PAD 0xBE
 #define DS18B20_COMMAND_START_CONVERSION 0x44
@@ -18,10 +19,10 @@ Ds18b20_Temperature ds18b20_convert_temp(OneWire_Byte lsb, OneWire_Byte msb);
 
 void ds18b20_read_temp_from_address(Ds18b20_Object * ds18b20_object);
 
-uint64_t ds18b20_search_once(uint8_t index, Ds18b20_Object * ds18b20_objects, OneWire_Object * ow_object_ptr);
+uint64_t ds18b20_search_once(uint8_t index, Ds18b20_Object * ds18b20_objects, OneWire_Object * ow_object_ptr, bool read_from_file);
 
 Ds18b20_Object* ds18b20_search_all(
-  Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount
+  Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount, bool read_from_file
 );
 
 Ds18b20_Object ds18b20_init(OneWire_Object * ow_object_ptr, Ds18b20_Address address) {
@@ -72,7 +73,11 @@ void ds18b20_read_temp_from_address(Ds18b20_Object * ds18b20_object_ptr) {
   }
 }
 
-uint64_t ds18b20_search_once(uint8_t index, Ds18b20_Object * ds18b20_objects, OneWire_Object * ow_object_ptr) {
+uint64_t ds18b20_search_once(uint8_t index, Ds18b20_Object * ds18b20_objects, OneWire_Object * ow_object_ptr, bool read_from_file) {
+  if (read_from_file) {
+    ds18b20_objects[index] = ds18b20_init(ow_object_ptr, read_address(index));
+  }
+
   uint8_t i;
   uint8_t last_bit = 0;
   uint8_t last_discrepancie = 0;
@@ -129,7 +134,7 @@ uint64_t ds18b20_search_once(uint8_t index, Ds18b20_Object * ds18b20_objects, On
 }
 
 Ds18b20_Object* ds18b20_search_all(
-  Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount
+  Ds18b20_Object * ds18b20_objects, Ds18b20_Port port, Ds18b20_Pin pin, uint8_t max_amount, bool read_from_file
 ) {
   uint8_t i = 0;
   OneWire_Object * ow_object;
@@ -137,7 +142,7 @@ Ds18b20_Object* ds18b20_search_all(
   ow_init(ow_object, port, pin);
 
   for(i = 0; i < max_amount; i++) {
-    ds18b20_search_once(i, ds18b20_objects, ow_object);
+    ds18b20_search_once(i, ds18b20_objects, ow_object, read_from_file);
   }
 
   return ds18b20_objects;

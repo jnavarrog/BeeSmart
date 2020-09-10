@@ -1,4 +1,6 @@
 #include <gpio-hal.h>
+#ifndef OW_H_INCLUDED
+#define OW_H_INCLUDED
 
 typedef gpio_hal_port_t OneWire_Port;
 typedef gpio_hal_pin_t OneWire_Pin;
@@ -40,3 +42,5 @@ OneWire_Byte ow_read_byte(OneWire_Object * ow_object_ptr);
 void ow_write_address(OneWire_Object * ow_object_ptr, OneWire_Address address);
 
 OneWire_Byte ow_reset(OneWire_Object * ow_object_ptr);
+
+#endif

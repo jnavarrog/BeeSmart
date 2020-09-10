@@ -3,7 +3,7 @@
 #include <Math.h>
 #include <stdio.h>
 
-int ds18b20_amount_int = 4;
+int ds18b20_amount_int = 9;
 int ds18b20_port_int = GPIO_HAL_NULL_PORT;
 int ds18b20_pin_int = IOID_23;
 
