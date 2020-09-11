@@ -8,7 +8,7 @@
 #include <DS18B20_SENSOR.h>
 #include <SERVO_SENSOR.h>
 #include <HX711_SENSOR.h>
-#include <BUTTON.h>
+#include <BUTTON_SENSOR.h>
 
 #include "sys/log.h"
 #define LOG_MODULE "App"
@@ -42,6 +42,11 @@ AUTOSTART_PROCESSES(&er_example_server);
 PROCESS_THREAD(er_example_server, ev, data)
 {
   PROCESS_BEGIN();
+
+  SENSORS_ACTIVATE(button);
+  button.configure(BUTTON_CONFIGURATION_PORT, limit_switch_port);
+  button.configure(BUTTON_CONFIGURATION_PIN, limit_switch_pin);
+  button.configure(BUTTON_CONFIGURATION_START, 0);
 
   SENSORS_ACTIVATE(ds18b20);
   ds18b20.configure(DS18B20_CONFIGURATION_AMOUNT, ds18b20_amount_int);

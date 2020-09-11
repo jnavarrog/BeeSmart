@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "coap-engine.h"
 #include <SERVO_SENSOR.h>
+#include <BUTTON_SENSOR.h>
 
 #define SERVO_OPEN SERVO_SENSOR_OPEN_POSITION
 #define SERVO_CLOSE SERVO_SENSOR_CLOSE_POSITION
@@ -36,7 +37,7 @@ static void res_get_handler(
   const char *len = NULL;
   char message[20];
 
-  sprintf(message, "%d", servo.value(SERVO_VALUE_POSITION) == SERVO_OPEN ? 1 : 0);
+  sprintf(message, "%d", button.value(BUTTON_VALUE));
 
   int length = strlen(message);
 
@@ -70,11 +71,11 @@ static void res_post_handler(
 
     printf("DATA INT: %d\n", action);
 
-   if (action == 1 && servo.value(SERVO_VALUE_POSITION) != SERVO_OPEN) {
+   if (action == 1) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
       servo.value(SERVO_VALUE_MOVE);
       delay(3);
-    } else if (action == 0 && servo.value(SERVO_VALUE_POSITION) == SERVO_OPEN) {
+    } else if (action == 0) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
       servo.value(SERVO_VALUE_MOVE);
       delay(3);
