@@ -9,6 +9,7 @@
 #include <SERVO_SENSOR.h>
 #include <HX711_SENSOR.h>
 #include <BUTTON_SENSOR.h>
+#include "batmon-sensor.h"
 
 #include "sys/log.h"
 #define LOG_MODULE "App"
@@ -33,8 +34,8 @@ extern coap_resource_t
   res_temperature,
   res_reboot,
   res_weight,
-  res_servo;
-
+  res_servo,
+  res_battery;
 
 PROCESS(er_example_server, "Servidor CoAP");
 AUTOSTART_PROCESSES(&er_example_server);
@@ -42,6 +43,8 @@ AUTOSTART_PROCESSES(&er_example_server);
 PROCESS_THREAD(er_example_server, ev, data)
 {
   PROCESS_BEGIN();
+
+  SENSORS_ACTIVATE(batmon_sensor);
 
   SENSORS_ACTIVATE(button);
   button.configure(BUTTON_CONFIGURATION_PORT, limit_switch_port);
@@ -80,6 +83,7 @@ PROCESS_THREAD(er_example_server, ev, data)
   coap_activate_resource(&res_reboot, "commands/reboot");
   coap_activate_resource(&res_weight, "sensors/weight");
   coap_activate_resource(&res_servo, "actuators/servo");
+  coap_activate_resource(&res_battery, "sensors/battery");
 
   while(1) {
     PROCESS_WAIT_EVENT();
