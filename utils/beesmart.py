@@ -38,6 +38,8 @@ def main():
 	global connect3g
 	global check3gcon
 	global tcheck3gcon
+	global tchecktun
+	global checktunnel
 	f=open("BEESMART.conf","r")
 	line=f.readlines()
 	#load BEESMART.conf configuration parameters
@@ -87,9 +89,15 @@ def main():
 		elif "D_ENABLE_CHK3GCON" in x:
 			check3gcon=x.split("=")[1]
 			check3gcon=check3gcon.rstrip()
+		elif "D_ENABLE_CHKTUNNEL" in x:
+			checktunnel=x.split("=")[1]
+			checktunnel=checktunnel.rstrip()
 		elif "T_CHK3GCON" in x:
 			tcheck3gcon=x.split("=")[1]
 			tcheck3gcon=tcheck3gcon.rstrip()
+		elif "T_CHKTUNNEL" in x:
+			tchecktun=x.split("=")[1]
+			tchecktun=tchecktun.rstrip()
 			
 	LOG("main --> configuración cargada")
 	f.close()
@@ -118,6 +126,12 @@ def main():
 	LOG("main --> se lanza thread get_alldata_tr")
 	get_alldata_tr = threading.Thread(target=get_alldata)
 	get_alldata_tr.start()
+	
+	if "yes" in checktunnel:
+		LOG("main --> se lanza thread chktunnel_tr")
+		chktunnel_tr = threading.Thread(target=chktunnel)
+		chktunnel_tr.start()
+		
 	LOG("main --> fin main")
 	
 def get_nodelist():
@@ -177,12 +191,13 @@ def coap_handler(coap_address, method, resource, data):
 	LOG("coap_handler --> coap-client "+coap_address+" "+method+" "+resource+" "+data)	
 	if method is 'get':
 		out = subprocess.Popen(['coap-client', '-v', '0','-B',coap_max_wtime,'-m',method,'coap://['+coap_address+']/'+resource], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		stdout,stderr = out.communicate()
+		datatosend=re.sub('v:1 t:CON.*]\s','',stdout)
+		LOG("coap_handler --> mosquitto_pub "+ datatosend.rstrip())	
+		os.system("mosquitto_pub -p " + port + " -h " +  broker + " -t "+idapiario+"/data -u "+ user+ " -P "+ passw + " -m \"["+timestamp+"]["+coap_address+"]["+resource+"]{"+datatosend.rstrip()+"}\"")
 	if method is 'post' or method is 'put':
-		out = subprocess.Popen(['coap-client', '-v', '0','-B',coap_max_wtime,'-m',method,'-e',data,'coap://['+coap_address+']/'+resource], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)		
-	stdout,stderr = out.communicate()
-	datatosend=re.sub('v:1 t:CON.*]\s','',stdout)
-	LOG("coap_handler --> mosquitto_pub "+ datatosend.rstrip())	
-	os.system("mosquitto_pub -p " + port + " -h " +  broker + " -t "+idapiario+"/data -u "+ user+ " -P "+ passw + " -m \"["+timestamp+"]["+coap_address+"]["+resource+"]{"+datatosend.rstrip()+"}\"")
+		out = subprocess.Popen(['coap-client', '-v', '0','-B',coap_max_wtime,'-m',method,'-e',data,'coap://['+coap_address+']/'+resource], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		stdout,stderr = out.communicate()
 	mutex.release()
 	
  	
@@ -264,7 +279,7 @@ def mosquitto_init():
 	sub.on_unsubscribe = on_unsubscribe
 	sub.on_message = on_message
 	sub.connect(broker, port)
-	#sub.subscribe(idapiario+"/send/#", qos=1)
+	sub.subscribe(idapiario+"/send/#", qos=1)
 	sub.loop_forever()
 	
 def modem3g(action):
@@ -285,26 +300,45 @@ def chk3gcon():
 		#print(stdout)
 		if "3 received" in stdout:
 			maxncon=0
-			LOG("chk3gcon --> hay conexion "+str(maxncon))
+			LOG("chk3gcon --> hay conexion 3g"+str(maxncon))
 
 		else:
 		        maxncon=maxncon+1
-			LOG("chk3gcon --> NO hay conexion "+ str(maxncon))
+			LOG("chk3gcon --> NO hay conexion 3g"+ str(maxncon))
 		if maxncon == 5:
-			LOG("chk3gcon --> Reiniciando conexion")
+			LOG("chk3gcon --> reiniciando conexion 3g")
 			modem3g("disconnect")
 			time.sleep(3)
 			modem3g("connect")
-			LOG("chk3gcon --> Conexion reiniciada")
+			LOG("chk3gcon -->Conexion reiniciada 3g")
 			maxncon=3
 		time.sleep(float(tcheck3gcon))
+		
+def chktunnel():
+	while 1:
+		out = subprocess.Popen(['ifconfig'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		stdout,stderr = out.communicate()
+		#print(stdout)
+		if ipv6_tunnel.split("/")[0].rstrip() in stdout:
+			LOG("chktunnel --> hay conexion tun")
+		else:
+			LOG("chktunnel --> no hay conexion tun")
+			#os.system("ifconfig tun0 down")
+			#os.system("tpid=`pgrep tunslip6`")
+			#os.system("kill -9 $tpid")
+			LOG("chktunnel --> se lanza thread tunslip6")
+			tunslip6_tr = threading.Thread(target=run_tunslip)
+			tunslip6_tr.start()
+			time.sleep(float(tchecktun))
+
+		time.sleep(float(tchecktun))
 	
 def LOG(msg):
 	if "yes" in enable_log:
-		print(msg)
 		ts = time.time()
 		timestamp = datetime.datetime.fromtimestamp(ts).strftime("%d-%m-%Y (%H:%M:%S.%f)")
 		os.system("echo '["+timestamp+"] "+msg+"' >> BEESMART.log")
+		print("["+timestamp+"]"+msg)
 
 	
 if __name__== "__main__":

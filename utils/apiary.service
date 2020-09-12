@@ -1,0 +1,14 @@
+[Unit]
+Description=Concentrador de Apiario
+After=network.target
+
+[Service]
+ExecStart=sudo /usr/bin/python beesmart.py
+WorkingDirectory=/home/pi/BeeSmart/utils
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
