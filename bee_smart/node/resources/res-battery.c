@@ -2,11 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "coap-engine.h"
-#include <SERVO_SENSOR.h>
-#include <BUTTON_SENSOR.h>
-
-#define SERVO_OPEN SERVO_SENSOR_OPEN_POSITION
-#define SERVO_CLOSE SERVO_SENSOR_CLOSE_POSITION
+#include "batmon-sensor.h"
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -14,30 +10,21 @@ static void res_put_handler(coap_message_t *request, coap_message_t *response, u
 static void res_delete_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 
 RESOURCE(
-  res_servo,
-  "title=\"Servo\",Desc=\"Controla el servo que maneja la puerta de la colmena\",GET=\"Posición actual de la puerta\",POST=\"1 para abrir, 0 para cerrar\"",
+  res_battery,
+  "title=\"Weight\",Desc=\"Bateria de la colmena\",GET=\"Devuelve la bateria de la colmena\"",
   res_get_handler,
   res_post_handler,
   res_put_handler,
   res_delete_handler
 );
 
-void delay(int sec){
-	watchdog_stop();
-	rtimer_clock_t end = (RTIMER_NOW() + RTIMER_SECOND*sec);
-	while(RTIMER_CLOCK_LT(RTIMER_NOW(), end)) {
-			/* do stuff */
-	}
-	watchdog_start();
-}
-
 static void res_get_handler(
-  coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset
-) {
+  coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
+{
   const char *len = NULL;
-  char message[20];
+  char message[62];
 
-  sprintf(message, "%d", button.value(BUTTON_VALUE));
+  sprintf(message, "%d", (batmon_sensor.value(BATMON_SENSOR_TYPE_VOLT) * 125) >> 5);
 
   int length = strlen(message);
 
@@ -58,33 +45,16 @@ static void res_get_handler(
   coap_set_header_etag(response, (uint8_t *)&length, 1);
   coap_set_payload(response, buffer, length);
 
-  printf("[LOG User] GET SERVO successful\n");
+  printf("[LOG: User] GET BATTERY successful\n");
 }
 
 static void res_post_handler(
   coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset
 ) {
-
-    const uint8_t * payload;
-    coap_get_payload(request, &payload);
-    int action = atoi((const char *) payload);
-
-    printf("DATA INT: %d\n", action);
-
-   if (action == 1) {
-      servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
-      servo.value(SERVO_VALUE_MOVE);
-      delay(3);
-    } else if (action == 0) {
-      servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
-      servo.value(SERVO_VALUE_MOVE);
-      delay(3);
-    }
-
-
+	const uint8_t * payload;
+	coap_get_payload(request, &payload);
 	printf("DATA: %s\n", payload);
-
-	printf("[LOG: User] POST SERVO successful\n");
+	printf("[LOG: User] POST BATTERY successful\n");
 }
 
 static void res_put_handler(
@@ -93,7 +63,7 @@ static void res_put_handler(
 	const uint8_t * payload;
   coap_get_payload(request, &payload);
 	printf("DATA: %s\n", payload);
-	printf("[LOG: User] PUT SERVO successful\n");
+	printf("[LOG: User] PUT BATTERY successful\n");
 }
 
 static void res_delete_handler(
@@ -102,5 +72,5 @@ static void res_delete_handler(
 	const uint8_t * payload;
   coap_get_payload(request, &payload);
 	printf("DATA: %s\n", payload);
-	printf("[LOG: User] DELETE SERVO successful\n");
+	printf("[LOG: User] DELETE BATTERY successful\n");
 }

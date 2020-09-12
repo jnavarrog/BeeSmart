@@ -24,7 +24,6 @@ int hx711_sensor_start_read() {
   }
 
   hx711_object = hx711_init(hx711_port, hx711_pin_dout, hx711_pin_sck);
-  hx711_read_once(&hx711_object);
   return HX711_RESPONSE_SUCCESS;
 }
 

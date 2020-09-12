@@ -4,7 +4,6 @@
 #include <stdbool.h>
 
 typedef uint8_t Servo_Pin;
-typedef uint8_t Servo_Port;
 
 typedef enum Servo_Position {
   SERVO_POSITION_0,
@@ -21,15 +20,16 @@ typedef enum Servo_Position {
 
 typedef struct Servo_Object {
   Servo_Pin       pin;
-  Servo_Port      port;
   Servo_Position  position;
-  bool            on;
+  bool            pwm_open;
   bool            init;
 } Servo_Object;
 
-extern Servo_Object servo_init(Servo_Port port, Servo_Pin pin);
+extern Servo_Object servo_init(Servo_Pin pin);
 
-extern void servo_stop(Servo_Object * servo_object_ptr);
+extern void servo_off(Servo_Object * servo_object_ptr);
+
+extern void servo_on(Servo_Object * servo_object_ptr);
 
 extern void servo_open(Servo_Object * servo_object_ptr);
 

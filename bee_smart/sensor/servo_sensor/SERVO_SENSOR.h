@@ -1,14 +1,16 @@
 #include <SERVO.h>
 #include "lib/sensors.h"
 
+#define SERVO_SENSOR_OPEN_POSITION 1
+#define SERVO_SENSOR_CLOSE_POSITION 254
+
 extern const struct sensors_sensor servo;
 
 typedef enum Servo_Configuration {
   SERVO_CONFIGURATION_START,
   SERVO_CONFIGURATION_POSITION,
   SERVO_CONFIGURATION_PIN,
-  SERVO_CONFIGURATION_PORT,
-  SERVO_CONFIGURATION_STOP_DELAY
+  SERVO_CONFIGURATION_STOP
 } Servo_Configuration;
 
 typedef enum Servo_Value {

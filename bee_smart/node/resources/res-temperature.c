@@ -27,10 +27,10 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
 
   const char *len = NULL;
 
-  char message[62];
-  sprintf(message, "Temp:");
+  char message[128];
+  sprintf(message, "|");
   int ds18b20_amount_int_res = DS18B20_AMOUNT_INT;
-  
+
   for(int i = 0; i < ds18b20_amount_int_res; i++) {
       ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
       ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
@@ -38,14 +38,14 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
       int address_low = ds18b20.value(DS18B20_VALUE_ADDRESS_LOW);
       int address_high = ds18b20.value(DS18B20_VALUE_ADDRESS_HIGH);
       int integer = ds18b20.value(DS18B20_VALUE_TEMPERATURE_INTEGER);
-      int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
+      int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL) / 2;
 
       printf("Address %x%x: %d,%d\n", address_high, address_low, integer, decimal);
-     
-      sprintf(message + strlen(message), "|%d.%d",integer, decimal);		  
-            
+
+      sprintf(message + strlen(message), "%d.%d|", integer, decimal);
+
   }//end for
-  sprintf(message + strlen(message), "|");		  
+  sprintf(message + strlen(message), "|");
   printf("MESSAGE LEN: %d\n",strlen(message));
 
   //----------------------------------------------------------------------------------------------/

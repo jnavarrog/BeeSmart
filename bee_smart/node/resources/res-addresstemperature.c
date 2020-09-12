@@ -23,7 +23,7 @@ RESOURCE(
 int i = 0;
 
 //GET
-#define CHUNKS_TOTAL    512
+#define CHUNKS_TOTAL    800
 
 static void
 res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
@@ -51,7 +51,7 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
   int integer = ds18b20.value(DS18B20_VALUE_TEMPERATURE_INTEGER);
   int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
 
-  strpos += snprintf((char *)buffer + strpos, preferred_size - strpos + 1,"|Address:%x%x-Temperature:%d,%d|", address_high, address_low, integer, decimal);
+  strpos += snprintf((char *)buffer + strpos, preferred_size - strpos + 1,"|%x%x-%d.%d|", address_high, address_low, integer, decimal);
      
    printf("Address:%x%x Temperature:%d,%d iter: %d len %d\n", address_high, address_low, integer, decimal,i, strlen((char *)buffer)); 
    i++;

@@ -2,18 +2,18 @@
 #include <stdlib.h>
 #include <OW.h>
 
-#define ONEWIRE_OUTPUT_TIME_WRITE 10
-#define ONEWIRE_INPUT_TIME_WRITE_1 45
-#define ONEWIRE_OUTPUT_TIME_WRITE_0 35
+#define ONEWIRE_OUTPUT_TIME_WRITE 6
+#define ONEWIRE_INPUT_TIME_WRITE_1 64
+#define ONEWIRE_OUTPUT_TIME_WRITE_0 60
 #define ONEWIRE_INPUT_TIME_WRITE_0 10
 
-#define ONEWIRE_OUTPUT_TIME_READ 6
-#define ONEWIRE_INPUT_TIME_READ 4
-#define ONEWIRE_HOLD_TIME_READ 45
+#define ONEWIRE_OUTPUT_TIME_READ 4
+#define ONEWIRE_INPUT_TIME_READ 8
+#define ONEWIRE_HOLD_TIME_READ 60
 
-#define ONEWIRE_OUTPUT_TIME_RESET 500
+#define ONEWIRE_OUTPUT_TIME_RESET 480
 #define ONEWIRE_INPUT_TIME_RESET 70
-#define ONEWIRE_HOLD_TIME_RESET 70
+#define ONEWIRE_HOLD_TIME_RESET 410
 
 bool bit_at(uint64_t value, uint8_t index) {
   return (bool)(((uint64_t) 1 << (63 - index)) & value) == 1;
@@ -49,6 +49,7 @@ void ow_set_output(OneWire_Object * ow_object_ptr) {
 
 void ow_set_input(OneWire_Object * ow_object_ptr) {
   gpio_hal_arch_pin_set_input(ow_object_ptr->port, ow_object_ptr->pin);
+  gpio_hal_arch_no_port_pin_cfg_set(ow_object_ptr->pin, GPIO_HAL_PIN_CFG_PULL_UP);
   ow_object_ptr->direction = ONEWIRE_DIRECTION_INPUT;
 }
 

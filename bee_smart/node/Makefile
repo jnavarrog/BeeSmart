@@ -22,6 +22,8 @@ MODULES += os/services/orchestra
 
 #Sensores
 MODULES += coresdk_cc13xx_cc26xx/source
+MODULES += $(CONTIKI_NG_STORAGE_DIR)/cfs
+MODULES += bee_smart/lib/addresses_file
 MODULES += bee_smart/lib/ow
 MODULES += bee_smart/lib/ds18b20
 MODULES += bee_smart/sensor/ds18b20_sensor
@@ -41,5 +43,11 @@ MODULES += bee_smart/sensor/hx711_sensor
 PROJECT_SOURCEFILES += HX711_SENSOR.c
 CONTIKIDIRS+=bee_smart/lib/hx711
 CONTIKIDIRS+=bee_smart/sensor/hx711_sensor
+
+MODULES += bee_smart/lib/button
+MODULES += bee_smart/sensor/button_sensor
+PROJECT_SOURCEFILES += BUTTON.c
+CONTIKIDIRS+=bee_smart/lib/button
+CONTIKIDIRS+=bee_smart/sensor/button_sensor
 
 include $(CONTIKI)/Makefile.include

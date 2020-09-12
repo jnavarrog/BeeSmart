@@ -5,7 +5,6 @@
 #define SERVO_HOLD_PERIOD CLOCK_SECOND * 3
 
 int servo_pin_int = IOID_12;
-int servo_port_int = GPIO_HAL_NULL_PORT;
 
 PROCESS(servo_example, "servo_example");
 AUTOSTART_PROCESSES(&servo_example);
@@ -18,7 +17,6 @@ PROCESS_THREAD(servo_example, ev, data) {
   printf("servo.c");
 
   SENSORS_ACTIVATE(servo);
-  servo.configure(SERVO_CONFIGURATION_PORT, servo_port_int);
   servo.configure(SERVO_CONFIGURATION_PIN, servo_pin_int);
   servo.configure(SERVO_CONFIGURATION_START, 0);
 

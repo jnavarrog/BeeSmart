@@ -15,8 +15,27 @@ El programa princiapl beesmart.py se encarga de:
 -PAHO MQTT Python Client (`pip install paho-mqtt`)
 -ifconfig (`apt-get install net-tools`)
 -CoAP Client (`apt-get install libcoap-1-0`)
+-sakis3g (` git clone https://github.com/Trixarian/sakis3g-source.git`)
 -El programa debe ser ejecutado como root
 -El archivo de BEESMART.conf y tunslip6 deben estar en la misma carpeta
+
+###Instalación y configuración sakis3g
+-Entrar a la carpeta sakis3g-source
+-Si no está instalado, instalar libusb-1.0-0-dev y ppp
+-En dependencies/usb-modeswitch/usb_modeswitch.h cambiar #include <libusb.h> por #include <libusb-1.0/libusb.h>
+-./compile
+-sudo cp build/sakis3gz /usr/bin/sakis3g
+-En /etc/sakis3g.conf (hay un ejemplo en sakis3g-source/files)
+
+```
+USBDRIVER="option"
+OTHER="USBMODEM"
+USBMODEM="19d2:2003" # Se saca del comando lsusb
+APN="antel.lte"
+APN_USER="0"
+APN_PASS="0"
+```
+
 
 ##MQTT Topics
 

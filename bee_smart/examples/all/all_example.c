@@ -8,7 +8,6 @@
 #define WEIGHT_WAIT_PERIOD CLOCK_SECOND * 3
 
 int servo_pin_int = IOID_12;
-int servo_port_int = GPIO_HAL_NULL_PORT;
 
 int ds18b20_amount_int = 4;
 int ds18b20_port_int = GPIO_HAL_NULL_PORT;
@@ -30,7 +29,6 @@ PROCESS_THREAD(all_example, ev, data) {
   printf("all.c");
 
   SENSORS_ACTIVATE(servo);
-  servo.configure(SERVO_CONFIGURATION_PORT, servo_port_int);
   servo.configure(SERVO_CONFIGURATION_PIN, servo_pin_int);
   servo.configure(SERVO_CONFIGURATION_START, 0);
 

@@ -1,6 +1,7 @@
 #include <DS18B20_SENSOR.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <ADDRESSES_FILE.h>
 
 #define DS18B20_ADDRESS_HIGH_LENGHT 32
 #define DS18B20_ADDRESS_LOW_MASK 0x00000000FFFFFFFF
@@ -19,13 +20,13 @@ bool ds18b20_sensor_ready_to_read() {
   return ds18b20_amount >= 0 && ds18b20_pin >= 0 && ds18b20_port >= 0 && ds18b20_index >= 0;
 }
 
-int ds18b20_sensor_start() {
+int ds18b20_sensor_start(bool read_from_file) {
   if (!ds18b20_sensor_ready_to_start()) {
     return DS18B20_RESPONSE_ERROR;
   }
 
   ds18b20_objects = (Ds18b20_Object *) malloc(sizeof(Ds18b20_Object[ds18b20_amount]));
-  ds18b20_search_all(ds18b20_objects, ds18b20_port, ds18b20_pin, ds18b20_amount);
+  ds18b20_search_all(ds18b20_objects, ds18b20_port, ds18b20_pin, ds18b20_amount, read_from_file);
   return DS18B20_RESPONSE_SUCCESS;
 }
 
@@ -77,7 +78,10 @@ static int status(int type) {
 static int configure(int type, int c) {
   switch(type) {
     case DS18B20_CONFIGURATION_START:
-      return ds18b20_sensor_start();
+      return ds18b20_sensor_start(false);
+
+    case DS18B20_CONFIGURATION_START_FROM_FILE:
+      return ds18b20_sensor_start(true);
 
     case DS18B20_CONFIGURATION_READ:
       return ds18b20_sensor_read();

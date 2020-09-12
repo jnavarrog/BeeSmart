@@ -1,126 +1,97 @@
 #include <SERVO.h>
+#include <contiki.h>
+#include <ti-lib.h>
+#include <lpm.h>
 
-#define SERVO_POSITION_MAX SERVO_POSITION_9
-#define SERVO_POSITION_MIN SERVO_POSITION_0
+#define PWM_PERIOD 0xFFFF
 
-#define SERVO_PERIOD_TICKS_100_US 200
-#define SERVO_PERIOD_ON_MIN_100_US 1
-#define SERVO_PERIOD_ON_MAX_100_US 28
-#define SERVO_PERIOD_ON_STEP_100_US 3
+#define SERVO_POSITION_MAX 0xFF
+#define SERVO_POSITION_MIN 0x0
 
-#define RTIMER_TICK_100_US RTIMER_SECOND / 10000
-#define SERVO_PERIOD_TICKS RTIMER_TICK_100_US * SERVO_PERIOD_TICKS_100_US
-#define SERVO_PERIOD_ON_MIN_TICKS RTIMER_TICK_100_US * SERVO_PERIOD_ON_MIN_100_US
-#define SERVO_PERIOD_ON_MAX_TICKS RTIMER_TICK_100_US * SERVO_PERIOD_ON_MAX_100_US
-#define SERVO_PERIOD_ON_STEP_TICKS RTIMER_TICK_100_US * SERVO_PERIOD_ON_STEP_100_US
+#define PWM_MAX 63
+#define PWM_MIN 1
 
-PROCESS(servo_thread, "servo_thread");
+LPM_MODULE(pwm_module, NULL, NULL, NULL, LPM_DOMAIN_PERIPH);
 
-int servo_period_ticks = SERVO_PERIOD_TICKS;
-int servo_on_period_ticks;
-int servo_off_period_ticks;
+void pwm_start(Servo_Object * servo_object_ptr) {
+  ti_lib_prcm_peripheral_run_enable(PRCM_PERIPH_TIMER0);
+  ti_lib_prcm_peripheral_sleep_enable(PRCM_PERIPH_TIMER0);
+  ti_lib_prcm_peripheral_deep_sleep_enable(PRCM_PERIPH_TIMER0);
+  ti_lib_prcm_load_set();
 
-static void servo_off_period_complete(struct rtimer * rt, void * ptr) {
-  process_poll(&servo_thread);
+  while(!ti_lib_prcm_load_get());
+
+  ti_lib_ioc_port_configure_set(servo_object_ptr->pin, IOC_PORT_MCU_PORT_EVENT0, IOC_STD_OUTPUT);
+  HWREG(GPT0_BASE + GPT_O_TAMR) = (TIMER_CFG_A_PWM) | GPT_TAMR_TAPWMIE;
+
+  lpm_register_module(&pwm_module);
+  ti_lib_timer_disable(GPT0_BASE, TIMER_A);
+
+  servo_object_ptr->pwm_open = true;
 }
 
-static void servo_on_period_complete(struct rtimer * rt, void * ptr) {
-  process_poll(&servo_thread);
+void pwm_stop(Servo_Object * servo_object_ptr) {
+  lpm_unregister_module(&pwm_module);
+
+  ti_lib_timer_disable(GPT0_BASE, TIMER_A);
+  ti_lib_prcm_peripheral_run_disable(PRCM_PERIPH_TIMER0);
+  ti_lib_prcm_peripheral_sleep_disable(PRCM_PERIPH_TIMER0);
+  ti_lib_prcm_peripheral_deep_sleep_disable(PRCM_PERIPH_TIMER0);
+  ti_lib_prcm_load_set();
+
+  while(!ti_lib_prcm_load_get());
+
+  servo_object_ptr->pwm_open = false;
 }
 
-void servo_set_rtimer_on_period(Servo_Object * servo_object_ptr) {
-  servo_on_period_ticks =
-    SERVO_PERIOD_ON_MIN_TICKS + (SERVO_PERIOD_ON_STEP_TICKS * (int) servo_object_ptr->position);
-
-  if (servo_on_period_ticks > SERVO_PERIOD_ON_MAX_TICKS) {
-    servo_on_period_ticks = SERVO_PERIOD_ON_MAX_TICKS;
+void pwm_set(Servo_Object * servo_object_ptr) {
+  if (!servo_object_ptr->pwm_open) {
+    return;
   }
 
-  servo_off_period_ticks = SERVO_PERIOD_TICKS - servo_on_period_ticks;
+  Servo_Position position = servo_object_ptr->position;
 
-  servo_object_ptr->on = true;
+  if (position < (Servo_Position) PWM_MIN) {
+    position = (Servo_Position) PWM_MIN;
+  }
 
-  process_start(&servo_thread, servo_object_ptr);
-  process_poll(&servo_thread);
+  uint32_t pwm_period = (uint32_t) position * (uint32_t) PWM_PERIOD / 100;
+
+  ti_lib_timer_load_set(GPT0_BASE, TIMER_A, (uint32_t) PWM_PERIOD);
+  ti_lib_timer_match_set(GPT0_BASE, TIMER_A, pwm_period);
+  ti_lib_timer_enable(GPT0_BASE, TIMER_A);
 }
 
-void servo_set_output(Servo_Object * servo_object_ptr) {
-  gpio_hal_arch_pin_set_output(servo_object_ptr->port, servo_object_ptr->pin);
-}
-
-void servo_pin_on(Servo_Object * servo_object_ptr) {
-  gpio_hal_arch_write_pin(servo_object_ptr->port, servo_object_ptr->pin, 1);
-}
-
-void servo_pin_off(Servo_Object * servo_object_ptr) {
-  gpio_hal_arch_write_pin(servo_object_ptr->port, servo_object_ptr->pin, 0);
-}
-
-Servo_Object servo_init(Servo_Port port, Servo_Pin pin) {
+Servo_Object servo_init(Servo_Pin pin) {
   Servo_Object servo_object;
 
-  servo_object.port = port;
   servo_object.pin = pin;
-  servo_object.position = 0;
-  servo_object.on = false;
   servo_object.init = true;
-
-  servo_set_output(&servo_object);
-  servo_pin_off(&servo_object);
+  servo_object.position = 0;
+  servo_object.pwm_open = false;
 
   return servo_object;
 }
 
-void servo_stop(Servo_Object * servo_object_ptr) {
-  servo_object_ptr->on = false;
+void servo_on(Servo_Object * servo_object_ptr) {
+  pwm_start(servo_object_ptr);
+}
+
+void servo_off(Servo_Object * servo_object_ptr) {
+  pwm_stop(servo_object_ptr);
 }
 
 void servo_open(Servo_Object * servo_object_ptr) {
   servo_object_ptr->position = (Servo_Position) SERVO_POSITION_MAX;
-  servo_set_rtimer_on_period(servo_object_ptr);
+  pwm_set(servo_object_ptr);
 }
 
 void servo_close(Servo_Object * servo_object_ptr) {
   servo_object_ptr->position = (Servo_Position) SERVO_POSITION_MIN;
-  servo_set_rtimer_on_period(servo_object_ptr);
+  pwm_set(servo_object_ptr);
 }
 
 void servo_move(Servo_Object * servo_object_ptr, Servo_Position position) {
   servo_object_ptr->position = position;
-  servo_set_rtimer_on_period(servo_object_ptr);
-}
-
-PROCESS_THREAD(servo_thread, ev, data) {
-  static Servo_Object * servo_object_ptr;
-  static struct rtimer rtimer_off_servo_period;
-  static struct rtimer rtimer_on_servo_period;
-
-  if ((Servo_Object *) data) {
-    servo_object_ptr = (Servo_Object *) data;
-  }
-
-  PROCESS_BEGIN();
-
-  while(1) {
-    if(!(servo_object_ptr->on)) {
-      PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
-    }
-      servo_pin_on(servo_object_ptr);
-
-      rtimer_set(
-        &rtimer_on_servo_period, RTIMER_NOW() + servo_on_period_ticks, 1, servo_on_period_complete, NULL
-      );
-
-      PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
-
-      servo_pin_off(servo_object_ptr);
-
-      rtimer_set(
-        &rtimer_off_servo_period, RTIMER_NOW() + servo_off_period_ticks, 1, servo_off_period_complete, NULL
-      );
-
-      PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
-  }
-
-  PROCESS_END();
+  pwm_set(servo_object_ptr);
 }
