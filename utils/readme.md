@@ -120,6 +120,9 @@ iprpi: devuelve la salida del comando ifconfig ejecutado en la RPI
 description: devuelve la descripción del apiario
 rebootrpi: reinicia la RPI
 
+-Subir archivo de configuración
+Publicar en `IDCOLMENA/send/beesmart.conf` el archivo de configuracion
+
 ##BEESMART.conF
 En este archivo se almacena la configuración principal del programa beesmart.py
 
