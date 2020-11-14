@@ -249,7 +249,9 @@ def on_message(client, userdata, message):
 			mutex.release()
 	elif "beesmart.conf" in message.topic:
 		os.system("rm -rf BEESMART.conf")
-		os.system("echo "+ message.payload + "> BEESMART.conf")
+		f=open("BEESMART.conf","w")
+		f.write(message.payload)
+   		f.close
 		LOG("beesmart.conf --> se sube nueva configuracion")
 			
 			
