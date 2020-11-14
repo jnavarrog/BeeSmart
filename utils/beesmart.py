@@ -247,6 +247,10 @@ def on_message(client, userdata, message):
 			LOG("rpicommands --> se ejecuto un comando invalido")
 			os.system("mosquitto_pub -p " + port + " -h " +  broker + " -t "+idapiario+"/rpicommands -u "+ user+ " -P "+ passw + " -m \"comando invalido\"")
 			mutex.release()
+	elif "beesmart.conf" in message.topic:
+		os.system("rm -rf BEESMART.conf")
+		os.system("echo "+ message.payload + "> BEESMART.conf")
+		LOG("beesmart.conf --> se sube nueva configuracion")
 			
 			
 def on_connect(client, userdata, flags, rc):
