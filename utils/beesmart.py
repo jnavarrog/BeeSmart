@@ -113,9 +113,18 @@ def main():
 		chk3gcon_tr = threading.Thread(target=chk3gcon)
 		chk3gcon_tr.start()
 	
-	LOG("main --> se lanza thread mosquitto_tr")
-	mosquitto_tr = threading.Thread(target=mosquitto_init, name='mosquitto_tr')
-	mosquitto_tr.start()
+	LOG("main --> esperando conexion a beesmart.cure.edu.uy")
+	haycon=0
+	while haycon==0: 
+		out = subprocess.Popen(['ping','-q','-c','3','beesmart.cure.edu.uy'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		stdout,stderr = out.communicate()
+		#print(stdout)
+		if "3 received" in stdout:
+			LOG("main --> se lanza thread mosquitto_tr")
+			mosquitto_tr = threading.Thread(target=mosquitto_init, name='mosquitto_tr')
+			mosquitto_tr.start()
+			haycon=1
+	        	
 	LOG("main --> se lanza thread tunslip6")
 	tunslip6_tr = threading.Thread(target=run_tunslip)
 	tunslip6_tr.start()
