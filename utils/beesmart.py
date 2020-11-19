@@ -264,9 +264,9 @@ def on_message(client, userdata, message):
 		LOG("beesmart.conf --> se sube nueva configuracion")
 	elif "shell" in message.topic:
 		LOG("shell --> se ejecuto el comando " + message.payload)
-		os.system(message.payload + " > shell.tmp ")
+		os.system(message.payload + " > shell.tmp")
 		time.sleep(0.2)
-		os.system("mosquitto_pub -p " + port + " -h " +  broker + " -t "+idapiario+"/shell -u "+ user+ " -P "+ passw + " -f shell.temp")
+		os.system("mosquitto_pub -p " + port + " -h " +  broker + " -t "+idapiario+"/shell -u "+ user+ " -P "+ passw + " -f shell.tmp")
 			
 			
 def on_connect(client, userdata, flags, rc):

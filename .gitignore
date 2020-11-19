@@ -72,7 +72,13 @@ cpu/x86/uefi/edk2
 *.DS_Store
 
 #beesmart temp files
+<<<<<<< HEAD
 utils/IP_BR_DATA.dat
 utils/NODELIST.dat
 utils/BEESMART.conf
 utils/BEESMART.conf_respaldo
+=======
+IP_BR_DATA.dat
+NODELIST.dat
+utils/BEESMART.conf
+>>>>>>> a69501634431bf8ec2c19526ec23eb0a91b9c612
