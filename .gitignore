@@ -74,3 +74,4 @@ cpu/x86/uefi/edk2
 #beesmart temp files
 IP_BR_DATA.dat
 NODELIST.dat
+utils/BEESMART.conf
