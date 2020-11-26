@@ -29,7 +29,8 @@ typedef enum Servo_Response {
 typedef enum Servo_Status {
   SERVO_STATUS_NOT_READY,
   SERVO_STATUS_READY_TO_START,
-  SERVO_STATUS_READY_TO_MOVE
+  SERVO_STATUS_READY_TO_MOVE,
+  SERVO_STATUS_STOPPED
 } Servo_Status;
 
 

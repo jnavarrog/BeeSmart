@@ -117,6 +117,13 @@ void hx711_start() {
   hx711_set_interrupt_handler(hx711_object);
 }
 
+void hx711_pause() {
+  hx711_set_output(hx711_object.port, hx711_object.pin_sck);
+  hx711_set_output(hx711_object.port, hx711_object.pin_dout);
+  hx711_unset_interrupts(hx711_object.pin_dout);
+  hx711_object.handler->pin_mask = gpio_hal_pin_to_mask(hx711_object.pin_dout);
+}
+
 void hx711_stop() {
   hx711_unset_interrupts(hx711_object.pin_dout);
 }

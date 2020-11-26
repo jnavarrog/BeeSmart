@@ -18,12 +18,30 @@ bool hx711_sensor_ready_to_get_read() {
   return hx711_sensor_ready_to_start_read() && hx711_object.weight != 0;
 }
 
-int hx711_sensor_start_read() {
+int hx711_sensor_init() {
   if (!hx711_sensor_ready_to_start_read()) {
     return HX711_RESPONSE_ERROR;
   }
 
   hx711_object = hx711_init(hx711_port, hx711_pin_dout, hx711_pin_sck);
+  return HX711_RESPONSE_SUCCESS;
+}
+
+int hx711_sensor_start() {
+  if (!hx711_sensor_ready_to_start_read()) {
+    return HX711_RESPONSE_ERROR;
+  }
+
+  hx711_start();
+  return HX711_RESPONSE_SUCCESS;
+}
+
+int hx711_sensor_pause() {
+  if (!hx711_sensor_ready_to_start_read()) {
+    return HX711_RESPONSE_ERROR;
+  }
+
+  hx711_pause();
   return HX711_RESPONSE_SUCCESS;
 }
 
@@ -55,8 +73,14 @@ static int status(int type) {
 
 static int configure(int type, int c) {
   switch(type) {
-    case HX711_CONFIGURATION_START_READ:
-      return hx711_sensor_start_read();
+    case HX711_CONFIGURATION_INIT:
+      return hx711_sensor_init();
+
+    case HX711_CONFIGURATION_START:
+      return hx711_sensor_start();
+
+    case HX711_CONFIGURATION_PAUSE:
+      return hx711_sensor_pause();
 
     case HX711_CONFIGURATION_PIN_DOUT:
       hx711_pin_dout = (Hx711_Pin) c;

@@ -24,6 +24,10 @@ int servo_sensor_start() {
   return SERVO_RESPONSE_SUCCESS;
 }
 
+int servo_sensor_stopped() {
+  return servo_object.pwm_open;
+}
+
 int servo_sensor_stop() {
   if (!servo_sensor_ready_to_move()) {
     return SERVO_RESPONSE_ERROR;
@@ -92,6 +96,8 @@ static int status(int type) {
     return SERVO_STATUS_READY_TO_START;
   } else if (servo_sensor_ready_to_move()) {
     return SERVO_STATUS_READY_TO_MOVE;
+  } else if (servo_sensor_stopped()) {
+    return SERVO_STATUS_STOPPED;
   } else {
     return SERVO_STATUS_NOT_READY;
   }

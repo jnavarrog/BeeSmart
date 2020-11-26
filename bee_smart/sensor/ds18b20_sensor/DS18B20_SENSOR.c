@@ -20,14 +20,22 @@ bool ds18b20_sensor_ready_to_read() {
   return ds18b20_amount >= 0 && ds18b20_pin >= 0 && ds18b20_port >= 0 && ds18b20_index >= 0;
 }
 
+int ds18b20_sensor_find_addresses(bool read_from_file) {
+  if (!ds18b20_sensor_ready_to_read()) {
+    return DS18B20_RESPONSE_ERROR;
+  }
+
+  ds18b20_search_all(ds18b20_objects, ds18b20_port, ds18b20_pin, ds18b20_amount, read_from_file);
+  return DS18B20_RESPONSE_SUCCESS;
+}
+
 int ds18b20_sensor_start(bool read_from_file) {
   if (!ds18b20_sensor_ready_to_start()) {
     return DS18B20_RESPONSE_ERROR;
   }
 
   ds18b20_objects = (Ds18b20_Object *) malloc(sizeof(Ds18b20_Object[ds18b20_amount]));
-  ds18b20_search_all(ds18b20_objects, ds18b20_port, ds18b20_pin, ds18b20_amount, read_from_file);
-  return DS18B20_RESPONSE_SUCCESS;
+  return ds18b20_sensor_find_addresses(read_from_file);
 }
 
 int ds18b20_sensor_read() {
@@ -82,6 +90,12 @@ static int configure(int type, int c) {
 
     case DS18B20_CONFIGURATION_START_FROM_FILE:
       return ds18b20_sensor_start(true);
+
+    case DS18B20_CONFIGURATION_RESTART:
+      return ds18b20_sensor_find_addresses(true);
+
+    case DS18B20_CONFIGURATION_RESTART_FROM_FILE:
+      return ds18b20_sensor_find_addresses(true);
 
     case DS18B20_CONFIGURATION_READ:
       return ds18b20_sensor_read();

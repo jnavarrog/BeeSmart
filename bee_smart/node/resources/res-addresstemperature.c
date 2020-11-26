@@ -6,6 +6,8 @@
 #include <math.h>
 #include <stdio.h>
 
+extern int wd_no_msg_timer;
+
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -22,12 +24,12 @@ RESOURCE(
 
 int i = 0;
 
-//GET
 #define CHUNKS_TOTAL    800
 
 static void
 res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
+  wd_no_msg_timer = 0;
   int32_t strpos = 0;
 
   /* Check the offset for boundaries of the resource data. */
@@ -39,10 +41,9 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     coap_set_payload(response, error_msg, strlen(error_msg));
     return;
   }
-  //----------------------------------------------------------------------------------------
 
   int ds18b20_amount_int_res = DS18B20_AMOUNT_INT;
-  
+
   ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
   ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
 
@@ -52,11 +53,9 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
   int decimal = ds18b20.value(DS18B20_VALUE_TEMPERATURE_DECIMAL);
 
   strpos += snprintf((char *)buffer + strpos, preferred_size - strpos + 1,"|%x%x-%d.%d|", address_high, address_low, integer, decimal);
-     
-   printf("Address:%x%x Temperature:%d,%d iter: %d len %d\n", address_high, address_low, integer, decimal,i, strlen((char *)buffer)); 
+
+   printf("Address:%x%x Temperature:%d,%d iter: %d len %d\n", address_high, address_low, integer, decimal,i, strlen((char *)buffer));
    i++;
-  
-  //----------------------------------------------------------------------------------------
 
   /* snprintf() does not adjust return value if truncated by size. */
   if(strpos > preferred_size) {
@@ -76,7 +75,7 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     i=0;
     *offset = -1;
   }
-}//end get
+}
 
 
 static void res_post_handler(

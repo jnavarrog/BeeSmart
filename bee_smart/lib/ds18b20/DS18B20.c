@@ -76,6 +76,7 @@ void ds18b20_read_temp_from_address(Ds18b20_Object * ds18b20_object_ptr) {
 uint64_t ds18b20_search_once(uint8_t index, Ds18b20_Object * ds18b20_objects, OneWire_Object * ow_object_ptr, bool read_from_file) {
   if (read_from_file) {
     ds18b20_objects[index] = ds18b20_init(ow_object_ptr, read_address(index));
+    return 0;
   }
 
   uint8_t i;

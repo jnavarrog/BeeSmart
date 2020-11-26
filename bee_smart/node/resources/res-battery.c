@@ -4,6 +4,8 @@
 #include "coap-engine.h"
 #include "batmon-sensor.h"
 
+extern int wd_no_msg_timer;
+
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -21,6 +23,7 @@ RESOURCE(
 static void res_get_handler(
   coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
+  wd_no_msg_timer = 0;
   const char *len = NULL;
   char message[62];
 

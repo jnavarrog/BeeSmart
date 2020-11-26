@@ -8,6 +8,8 @@
 #define SERVO_OPEN SERVO_SENSOR_OPEN_POSITION
 #define SERVO_CLOSE SERVO_SENSOR_CLOSE_POSITION
 
+extern int wd_no_msg_timer;
+
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -22,18 +24,10 @@ RESOURCE(
   res_delete_handler
 );
 
-void delay(int sec){
-	watchdog_stop();
-	rtimer_clock_t end = (RTIMER_NOW() + RTIMER_SECOND*sec);
-	while(RTIMER_CLOCK_LT(RTIMER_NOW(), end)) {
-			/* do stuff */
-	}
-	watchdog_start();
-}
-
 static void res_get_handler(
   coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset
 ) {
+  wd_no_msg_timer = 0;
   const char *len = NULL;
   char message[20];
 
@@ -64,7 +58,7 @@ static void res_get_handler(
 static void res_post_handler(
   coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset
 ) {
-
+    wd_no_msg_timer = 0;
     const uint8_t * payload;
     coap_get_payload(request, &payload);
     int action = atoi((const char *) payload);
@@ -74,13 +68,10 @@ static void res_post_handler(
    if (action == 1) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_OPEN);
       servo.value(SERVO_VALUE_MOVE);
-      delay(3);
     } else if (action == 0) {
       servo.configure(SERVO_CONFIGURATION_POSITION, SERVO_CLOSE);
       servo.value(SERVO_VALUE_MOVE);
-      delay(3);
     }
-
 
 	printf("DATA: %s\n", payload);
 

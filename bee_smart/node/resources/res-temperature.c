@@ -6,6 +6,8 @@
 #include <math.h>
 #include <stdio.h>
 
+extern int wd_no_msg_timer;
+
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -20,11 +22,10 @@ RESOURCE(
   res_delete_handler
 );
 
-//GET
 static void
 res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
-
+  wd_no_msg_timer = 0;
   const char *len = NULL;
 
   char message[128];
@@ -44,11 +45,9 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
 
       sprintf(message + strlen(message), "%d.%d|", integer, decimal);
 
-  }//end for
+  }
   sprintf(message + strlen(message), "|");
   printf("MESSAGE LEN: %d\n",strlen(message));
-
-  //----------------------------------------------------------------------------------------------/
 
   int length = strlen(message);
 
@@ -66,13 +65,13 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     memcpy(buffer, message, length);
   }
 
-  coap_set_header_content_format(response, TEXT_PLAIN); /* text/plain is the default, hence this option could be omitted. */
+  coap_set_header_content_format(response, TEXT_PLAIN);
   coap_set_header_etag(response, (uint8_t *)&length, 1);
   coap_set_payload(response, buffer, length);
 
   printf("[LOG: User] GET successful\n");
 
-}// end get
+}
 
 static void res_post_handler(
   coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset

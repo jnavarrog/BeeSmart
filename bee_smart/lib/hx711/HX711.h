@@ -18,5 +18,7 @@ typedef struct Hx711_Object {
 
 
 Hx711_Object hx711_init(Hx711_Port port, Hx711_Pin pin_dout, Hx711_Pin pin_sck);
+void hx711_start();
+void hx711_pause();
 
 void hx711_stop();

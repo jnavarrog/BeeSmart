@@ -4,6 +4,8 @@
 #include "coap-engine.h"
 #include <HX711_SENSOR.h>
 
+extern int wd_no_msg_timer;
+
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -21,10 +23,11 @@ RESOURCE(
 static void res_get_handler(
   coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
+  wd_no_msg_timer = 0;
   const char *len = NULL;
   char message[62];
 
-  sprintf(message, "%x%x", hx711.value(HX711_VALUE_WEIGHT_HIGH), hx711.value(HX711_VALUE_WEIGHT_LOW));
+  sprintf(message, "%04x%04x", hx711.value(HX711_VALUE_WEIGHT_HIGH), hx711.value(HX711_VALUE_WEIGHT_LOW));
 
   int length = strlen(message);
 

@@ -26,8 +26,6 @@ void pwm_start(Servo_Object * servo_object_ptr) {
 
   lpm_register_module(&pwm_module);
   ti_lib_timer_disable(GPT0_BASE, TIMER_A);
-
-  servo_object_ptr->pwm_open = true;
 }
 
 void pwm_stop(Servo_Object * servo_object_ptr) {
@@ -38,22 +36,18 @@ void pwm_stop(Servo_Object * servo_object_ptr) {
   ti_lib_prcm_peripheral_sleep_disable(PRCM_PERIPH_TIMER0);
   ti_lib_prcm_peripheral_deep_sleep_disable(PRCM_PERIPH_TIMER0);
   ti_lib_prcm_load_set();
-
-  while(!ti_lib_prcm_load_get());
-
-  servo_object_ptr->pwm_open = false;
 }
 
 void pwm_set(Servo_Object * servo_object_ptr) {
+  if (servo_object_ptr->position == 0) {
+    ti_lib_timer_disable(GPT0_BASE, TIMER_A);
+  }
+
   if (!servo_object_ptr->pwm_open) {
     return;
   }
 
   Servo_Position position = servo_object_ptr->position;
-
-  if (position < (Servo_Position) PWM_MIN) {
-    position = (Servo_Position) PWM_MIN;
-  }
 
   uint32_t pwm_period = (uint32_t) position * (uint32_t) PWM_PERIOD / 100;
 
@@ -75,10 +69,13 @@ Servo_Object servo_init(Servo_Pin pin) {
 
 void servo_on(Servo_Object * servo_object_ptr) {
   pwm_start(servo_object_ptr);
+  servo_object_ptr->pwm_open = true;
 }
 
 void servo_off(Servo_Object * servo_object_ptr) {
-  pwm_stop(servo_object_ptr);
+  servo_object_ptr->position = 0;
+  pwm_set(servo_object_ptr);
+  servo_object_ptr->pwm_open = false;
 }
 
 void servo_open(Servo_Object * servo_object_ptr) {
