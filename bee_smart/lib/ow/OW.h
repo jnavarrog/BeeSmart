@@ -21,6 +21,8 @@ typedef struct OneWire_Object {
 typedef uint64_t OneWire_Address;
 typedef uint8_t OneWire_Byte;
 
+void ow_delay(uint16_t us);
+
 bool bit_at(uint64_t value, uint8_t index);
 
 void set_bit(uint64_t* value, uint8_t index);

@@ -26,6 +26,7 @@ Hx711_Object hx711_init(Hx711_Port port, Hx711_Pin pin_dout, Hx711_Pin pin_sck);
 void hx711_reset();
 void hx711_start();
 void hx711_stop();
+void hx711_pause();
 Hx711_Weight hx711_read_weight_sample();
 Hx711_Weight hx711_get_reading();
 
@@ -87,6 +88,7 @@ static void hx711_handler_function(Hx711_Pin_Mask pin_mask) {
     }
 
     hx711_object.weight = average;
+    hx711_pause();
   }
 }
 
@@ -115,6 +117,7 @@ void hx711_start() {
   hx711_set_interrupts(hx711_object.pin_dout);
   hx711_object.handler->pin_mask = gpio_hal_pin_to_mask(hx711_object.pin_dout);
   hx711_set_interrupt_handler(hx711_object);
+  hx711_object.paused = false;
 }
 
 void hx711_pause() {
@@ -122,6 +125,7 @@ void hx711_pause() {
   hx711_set_output(hx711_object.port, hx711_object.pin_dout);
   hx711_unset_interrupts(hx711_object.pin_dout);
   hx711_object.handler->pin_mask = gpio_hal_pin_to_mask(hx711_object.pin_dout);
+  hx711_object.paused = true;
 }
 
 void hx711_stop() {
@@ -146,6 +150,10 @@ Hx711_Weight hx711_read_weight_sample() {
   hx711_set_interrupts(hx711_object.pin_dout);
 
   return weight;
+}
+
+bool hx711_paused() {
+  return hx711_object.paused;
 }
 
 Hx711_Weight hx711_get_reading() {

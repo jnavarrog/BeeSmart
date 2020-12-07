@@ -7,6 +7,8 @@
 #include <stdio.h>
 
 extern int wd_no_msg_timer;
+extern void io_on();
+extern void io_off();
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -31,7 +33,13 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
   char message[128];
   sprintf(message, "|");
   int ds18b20_amount_int_res = DS18B20_AMOUNT_INT;
+  io_on();
+  for(int i = 0; i < ds18b20_amount_int_res; i++) {
+      ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
+      ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
+  }
 
+    io_on();
   for(int i = 0; i < ds18b20_amount_int_res; i++) {
       ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
       ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
@@ -46,6 +54,7 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
       sprintf(message + strlen(message), "%d.%d|", integer, decimal);
 
   }
+  io_off();
   sprintf(message + strlen(message), "|");
   printf("MESSAGE LEN: %d\n",strlen(message));
 

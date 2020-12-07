@@ -45,6 +45,10 @@ int hx711_sensor_pause() {
   return HX711_RESPONSE_SUCCESS;
 }
 
+int hx711_sensor_paused() {
+  return hx711_paused() ? 1 : 0;
+}
+
 
 /*--------------------------SENSOR INTERFACE----------------------------------*/
 const struct sensors_sensor hx711;
@@ -62,7 +66,9 @@ static int value(int type) {
 }
 
 static int status(int type) {
-  if (hx711_sensor_ready_to_get_read()) {
+  if (HX711_STATUS_PAUSED) {
+    return hx711_sensor_paused();
+  } else if (hx711_sensor_ready_to_get_read()) {
     return HX711_STATUS_GET_READ_READY;
   } else if (hx711_sensor_ready_to_start_read()) {
     return HX711_STATUS_START_READ_READY;

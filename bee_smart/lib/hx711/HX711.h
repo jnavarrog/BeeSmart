@@ -14,6 +14,7 @@ typedef struct Hx711_Object {
   Hx711_Pin           pin_dout;
   Hx711_Weight        weight;
   Hx711_Handler *     handler;
+  bool                paused;
 } Hx711_Object;
 
 
@@ -22,3 +23,4 @@ void hx711_start();
 void hx711_pause();
 
 void hx711_stop();
+bool hx711_paused();

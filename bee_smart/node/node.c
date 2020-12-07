@@ -19,6 +19,8 @@
 #define SEARCH_LED_PIN IOID_6
 #define SEARCH_LED_PORT GPIO_HAL_NULL_PORT
 #define SEARCH_LED_TOGGLE_US 0xFFFF
+#define IO_VSS_PORT GPIO_HAL_NULL_PORT
+#define IO_VSS_PIN IOID_15
 
 void delay_seconds(int sec){
 	rtimer_clock_t end = (RTIMER_NOW() + RTIMER_SECOND * sec);
@@ -28,6 +30,7 @@ void delay_seconds(int sec){
 }
 
 bool search_led_status = false;
+bool io_status = false;
 
 int ds18b20_port_int = GPIO_HAL_NULL_PORT;
 int ds18b20_pin_int = IOID_23;
@@ -54,6 +57,18 @@ extern coap_resource_t
   res_servo,
   res_battery;
 
+void io_on() {
+  io_status = true;
+  gpio_hal_arch_pin_set_output(IO_VSS_PORT, IO_VSS_PIN);
+  gpio_hal_arch_write_pin(IO_VSS_PORT, IO_VSS_PIN, 1);
+}
+
+void io_off() {
+  io_status = false;
+  gpio_hal_arch_pin_set_output(IO_VSS_PORT, IO_VSS_PIN);
+  gpio_hal_arch_write_pin(IO_VSS_PORT, IO_VSS_PIN, 0);
+}
+
 void search_led_on() {
   search_led_status = true;
   gpio_hal_arch_write_pin(SEARCH_LED_PORT, SEARCH_LED_PIN, 1);
@@ -75,6 +90,11 @@ void search_led_toggle() {
 }
 
 void test_temp() {
+    for(int i = 0; i < ds18b20_amount_int; i++) {
+    ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
+    ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
+  }
+
   for(int i = 0; i < ds18b20_amount_int; i++) {
     ds18b20.configure(DS18B20_CONFIGURATION_INDEX, i);
     ds18b20.configure(DS18B20_CONFIGURATION_READ, 0);
@@ -179,7 +199,9 @@ PROCESS_THREAD(er_example_server, ev, data)
   ds18b20.configure(DS18B20_CONFIGURATION_PORT, ds18b20_port_int);
   ds18b20.configure(DS18B20_CONFIGURATION_PIN, ds18b20_pin_int);
   ds18b20.configure(DS18B20_CONFIGURATION_START_FROM_FILE, 0);
+  io_on();
   test_temp();
+  io_off();
 
   SENSORS_ACTIVATE(servo);
   servo.configure(SERVO_CONFIGURATION_PIN, servo_pin_int);
@@ -209,13 +231,11 @@ PROCESS_THREAD(er_example_server, ev, data)
     etimer_set(&wd_period, CLOCK_SECOND);
     PROCESS_WAIT_EVENT();
     if(etimer_expired(&wd_period)) {
-      search_led_toggle();
-      printf("wd_no_msg_timer: %d\n", ++wd_no_msg_timer);
+      wd_no_msg_timer++;
 
       if (wd_no_msg_timer > max_no_msg_timer) {
         watchdog_reboot();
-      }
-      if (!gpio_hal_arch_read_pin(GPIO_HAL_NULL_PORT, IOID_14)) {
+      } else if (!gpio_hal_arch_read_pin(GPIO_HAL_NULL_PORT, IOID_14)) {
         etimer_set(&period, CLOCK_SECOND);
         PROCESS_WAIT_UNTIL(etimer_expired(&period));
         if (!gpio_hal_arch_read_pin(GPIO_HAL_NULL_PORT, IOID_14)) {
@@ -233,15 +253,18 @@ PROCESS_THREAD(er_example_server, ev, data)
           search_led_off();
         }
       } else {
-        if (wd_no_msg_timer % 15 == 0) {
+        if (wd_no_msg_timer % 30 == 0) {
+          io_on();
+          servo.value(SERVO_VALUE_STOP);
+          hx711.configure(HX711_CONFIGURATION_START, 0);
+        } else if (wd_no_msg_timer % 5 == 0) {
+          io_off();
           servo.value(SERVO_VALUE_STOP);
         }
-        if (wd_no_msg_timer % 15 == 0) {
-          hx711.configure(HX711_CONFIGURATION_PAUSE, 0);
-        }
-        if (wd_no_msg_timer % 15 == 10 ) {
-          hx711.configure(HX711_CONFIGURATION_START, 0);
-        }
+      }
+
+      if (hx711.status(HX711_STATUS_PAUSED) && io_status) {
+        io_off();
       }
     }
   }

@@ -51,20 +51,33 @@ Ds18b20_Temperature ds18b20_convert_temp(OneWire_Byte lsb, OneWire_Byte msb) {
 
 void ds18b20_read_temp_from_address(Ds18b20_Object * ds18b20_object_ptr) {
   if (ds18b20_object_ptr->address != 0) {
+    ow_delay(0xFFFF);
     ow_reset(ds18b20_object_ptr->ow_object_ptr);
     ow_write_byte(ds18b20_object_ptr->ow_object_ptr, DS18B20_COMMAND_MATCH_ROM);
     ow_write_address(ds18b20_object_ptr->ow_object_ptr, ds18b20_object_ptr->address);
     ow_write_byte(ds18b20_object_ptr->ow_object_ptr, DS18B20_COMMAND_START_CONVERSION);
 
-    ow_reset(ds18b20_object_ptr->ow_object_ptr);
-    ow_write_byte(ds18b20_object_ptr->ow_object_ptr, DS18B20_COMMAND_MATCH_ROM);
-    ow_write_address(ds18b20_object_ptr->ow_object_ptr, ds18b20_object_ptr->address);
-    ow_write_byte(ds18b20_object_ptr->ow_object_ptr, DS18B20_COMMAND_READ_SCRATCH_PAD);
+    OneWire_Byte lsb_0 = 0xFF;
+    OneWire_Byte lsb_1 = 0;
+    OneWire_Byte msb_0 = 0xFF;
+    OneWire_Byte msb_1 = 0;
 
-    Ds18b20_Temperature temperature = ds18b20_convert_temp(
-      ow_read_byte(ds18b20_object_ptr->ow_object_ptr),
-      ow_read_byte(ds18b20_object_ptr->ow_object_ptr)
-    );
+    while (!(lsb_0 == lsb_1 && msb_0 == msb_1)) {
+      ow_reset(ds18b20_object_ptr->ow_object_ptr);
+      ow_write_byte(ds18b20_object_ptr->ow_object_ptr, DS18B20_COMMAND_MATCH_ROM);
+      ow_write_address(ds18b20_object_ptr->ow_object_ptr, ds18b20_object_ptr->address);
+      ow_write_byte(ds18b20_object_ptr->ow_object_ptr, DS18B20_COMMAND_READ_SCRATCH_PAD);
+      lsb_0 = ow_read_byte(ds18b20_object_ptr->ow_object_ptr);
+      msb_0 = ow_read_byte(ds18b20_object_ptr->ow_object_ptr);
+      ow_reset(ds18b20_object_ptr->ow_object_ptr);
+      ow_write_byte(ds18b20_object_ptr->ow_object_ptr, DS18B20_COMMAND_MATCH_ROM);
+      ow_write_address(ds18b20_object_ptr->ow_object_ptr, ds18b20_object_ptr->address);
+      ow_write_byte(ds18b20_object_ptr->ow_object_ptr, DS18B20_COMMAND_READ_SCRATCH_PAD);
+      lsb_1 = ow_read_byte(ds18b20_object_ptr->ow_object_ptr);
+      msb_1 = ow_read_byte(ds18b20_object_ptr->ow_object_ptr);
+    }
+
+    Ds18b20_Temperature temperature = ds18b20_convert_temp(lsb_0, msb_0);
 
     ds18b20_object_ptr->temperature = temperature;
   } else {
